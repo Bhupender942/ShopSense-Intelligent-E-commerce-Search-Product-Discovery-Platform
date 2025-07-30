@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { VoiceSearch } from "@/components/ui/voice-search";
+import { EnhancedSearch } from "@/components/ui/enhanced-search"; // ADD THIS LINE
 
 export const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -77,28 +78,17 @@ export const Header: React.FC = () => {
 
           {/* Search Bar - Hidden on mobile */}
           <div className="hidden md:flex flex-1 max-w-xl mx-8">
-            <form onSubmit={handleSearch} className="relative w-full flex">
-              <Input
-                type="text"
-                placeholder="Search for products, brands and more"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-4 pr-24 py-2 text-black bg-white border-none rounded-sm focus:outline-none focus:ring-2 focus:ring-white"
-              />
-              <div className="absolute right-0 top-0 h-full flex">
-                <VoiceSearch
-                  onResult={handleVoiceSearchResult}
-                  className="flex items-center h-full px-1"
-                />
-                <Button
-                  type="submit"
-                  size="sm"
-                  className="h-full px-4 bg-white hover:bg-gray-100 text-flipkart-blue rounded-l-none"
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
-              </div>
-            </form>
+            <EnhancedSearch
+              onSearch={(query, type) => {
+                const searchUrl =
+                  type === "category"
+                    ? `/search?category=${encodeURIComponent(query)}`
+                    : `/search?q=${encodeURIComponent(query)}`;
+                navigate(searchUrl);
+              }}
+              placeholder="Search for products, brands and more"
+              className="w-full"
+            />
           </div>
 
           {/* Desktop Navigation */}
@@ -179,28 +169,17 @@ export const Header: React.FC = () => {
 
         {/* Mobile Search Bar */}
         <div className="md:hidden pb-4">
-          <form onSubmit={handleSearch} className="relative">
-            <Input
-              type="text"
-              placeholder="Search for products, brands and more"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-4 pr-24 py-2 text-black bg-white border-none rounded-sm focus:outline-none focus:ring-2 focus:ring-white"
-            />
-            <div className="absolute right-0 top-0 h-full flex">
-              <VoiceSearch
-                onResult={handleVoiceSearchResult}
-                className="flex items-center h-full px-1"
-              />
-              <Button
-                type="submit"
-                size="sm"
-                className="h-full px-4 bg-white hover:bg-gray-100 text-flipkart-blue rounded-l-none"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-            </div>
-          </form>
+          <EnhancedSearch
+            onSearch={(query, type) => {
+              const searchUrl =
+                type === "category"
+                  ? `/search?category=${encodeURIComponent(query)}`
+                  : `/search?q=${encodeURIComponent(query)}`;
+              navigate(searchUrl);
+            }}
+            placeholder="Search for products, brands and more"
+            className="w-full"
+          />
         </div>
 
         {/* Mobile Menu */}
