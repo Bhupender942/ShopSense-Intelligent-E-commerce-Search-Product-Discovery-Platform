@@ -6,6 +6,7 @@ import {
   searchProducts,
   getCategories,
   getRecentlySearched,
+  getTestProducts,
 } from "../controllers/autosuggestController";
 
 const router = express.Router();
@@ -27,5 +28,8 @@ router.get("/categories", getCategories);
 
 // GET /api/autosuggest/recent-searches
 router.get("/recent-searches", getRecentlySearched);
+
+// GET /api/autosuggest/test-products (for debugging)
+router.get("/test-products", getTestProducts);
 
 export default router;

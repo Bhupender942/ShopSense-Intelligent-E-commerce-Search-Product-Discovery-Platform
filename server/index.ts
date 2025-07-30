@@ -55,7 +55,7 @@ export async function createServer() {
   app.use("/api/autosuggest", autosuggestRoutes);
   app.use("/api/image-search", imageSearchRoutes);
 
-  // Serve static uploads
+  // Serve static uploads for image search
   app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
   // Example API routes

@@ -158,45 +158,161 @@ export const searchProducts = async (
       minPrice,
       maxPrice,
       minRating,
+      minDiscount,
+      availability,
+      gender,
       sortBy = "popularity_score",
       sortOrder = "desc",
       page = 1,
       limit = 24,
     } = req.query;
 
+    console.log("Search request:", {
+      query,
+      category,
+      brand,
+      minPrice,
+      maxPrice,
+      minRating,
+      minDiscount,
+      availability,
+      gender,
+      sortBy,
+      sortOrder,
+      page,
+      limit,
+    });
+
     const filter: any = {};
 
+    // Handle text search
     if (query && typeof query === "string") {
-      filter.$text = { $search: query };
+      // Use text search if available, otherwise use regex
+      try {
+        filter.$text = { $search: query };
+      } catch (error) {
+        // Fallback to regex search if text index is not available
+        filter.$or = [
+          { title: { $regex: query, $options: "i" } },
+          { brand: { $regex: query, $options: "i" } },
+          { category: { $regex: query, $options: "i" } },
+          { subcategory: { $regex: query, $options: "i" } },
+          { tags: { $regex: query, $options: "i" } },
+        ];
+      }
     }
 
+    // Handle category filter (support multiple categories)
     if (category && typeof category === "string") {
-      filter.category = { $regex: category, $options: "i" };
+      if (category.includes(",")) {
+        // Multiple categories
+        const categories = category.split(",").map((c) => c.trim());
+        filter.category = { $in: categories };
+      } else {
+        filter.category = { $regex: category, $options: "i" };
+      }
     }
 
+    // Handle brand filter (support multiple brands)
     if (brand && typeof brand === "string") {
-      filter.brand = { $regex: brand, $options: "i" };
+      if (brand.includes(",")) {
+        // Multiple brands
+        const brands = brand.split(",").map((b) => b.trim());
+        filter.brand = { $in: brands };
+      } else {
+        filter.brand = { $regex: brand, $options: "i" };
+      }
     }
 
+    // Handle price filters
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
 
+    // Handle rating filter
     if (minRating) {
       filter.average_rating = { $gte: Number(minRating) };
     }
+
+    // Handle discount filter
+    if (minDiscount) {
+      filter.discount_percentage = { $gte: Number(minDiscount) };
+    }
+
+    // Handle availability filter
+    if (availability && typeof availability === "string") {
+      if (availability.includes(",")) {
+        // Multiple availability options
+        const availabilities = availability.split(",").map((a) => a.trim());
+        filter.availability = { $in: availabilities };
+      } else {
+        filter.availability = { $regex: availability, $options: "i" };
+      }
+    }
+
+    // Handle gender filter
+    if (gender && typeof gender === "string") {
+      if (gender.includes(",")) {
+        // Multiple genders
+        const genders = gender.split(",").map((g) => g.trim());
+        filter.gender = { $in: genders };
+      } else {
+        filter.gender = { $regex: gender, $options: "i" };
+      }
+    }
+
+    console.log("MongoDB filter:", JSON.stringify(filter, null, 2));
 
     const sort: any = {};
     sort[sortBy as string] = sortOrder === "desc" ? -1 : 1;
 
     const skip = (Number(page) - 1) * Number(limit);
 
-    const [products, totalCount] = await Promise.all([
-      Product.find(filter).sort(sort).skip(skip).limit(Number(limit)).lean(),
-      Product.countDocuments(filter),
-    ]);
+    // Execute search with better error handling
+    let products, totalCount;
+    try {
+      [products, totalCount] = await Promise.all([
+        Product.find(filter)
+          .sort(sort)
+          .skip(skip)
+          .limit(Number(limit))
+          .select(
+            "product_id title brand category subcategory gender price original_price discount_percentage average_rating rating_count availability images popularity_score date_added tags",
+          )
+          .lean(),
+        Product.countDocuments(filter),
+      ]);
+    } catch (dbError) {
+      console.error("Database search error:", dbError);
+      // Fallback to simple search if text search fails
+      if (query && typeof query === "string") {
+        const fallbackFilter = {
+          $or: [
+            { title: { $regex: query, $options: "i" } },
+            { brand: { $regex: query, $options: "i" } },
+            { category: { $regex: query, $options: "i" } },
+          ],
+        };
+
+        [products, totalCount] = await Promise.all([
+          Product.find(fallbackFilter)
+            .sort(sort)
+            .skip(skip)
+            .limit(Number(limit))
+            .select(
+              "product_id title brand category subcategory gender price original_price discount_percentage average_rating rating_count availability images popularity_score date_added tags",
+            )
+            .lean(),
+          Product.countDocuments(fallbackFilter),
+        ]);
+      } else {
+        throw dbError;
+      }
+    }
+
+    console.log(`Found ${products.length} products out of ${totalCount} total`);
 
     // Track search analytics
     if (query && typeof query === "string") {
@@ -219,11 +335,19 @@ export const searchProducts = async (
         minPrice,
         maxPrice,
         minRating,
+        minDiscount,
+        availability,
+        gender,
+        sortBy,
+        sortOrder,
       },
     });
   } catch (error) {
     console.error("Error searching products:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({
+      message: "Error searching products",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
@@ -297,5 +421,38 @@ export const getRecentlySearched = async (
   } catch (error) {
     console.error("Error getting recently searched terms:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getTestProducts = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    console.log("Testing product database connection...");
+
+    // Get total count
+    const totalCount = await Product.countDocuments();
+    console.log(`Total products in database: ${totalCount}`);
+
+    // Get a few sample products
+    const sampleProducts = await Product.find({})
+      .limit(5)
+      .select("product_id title brand category price")
+      .lean();
+
+    console.log("Sample products:", sampleProducts);
+
+    res.status(200).json({
+      totalCount,
+      sampleProducts,
+      message: "Database connection test successful",
+    });
+  } catch (error) {
+    console.error("Error testing products:", error);
+    res.status(500).json({
+      message: "Error testing products",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };

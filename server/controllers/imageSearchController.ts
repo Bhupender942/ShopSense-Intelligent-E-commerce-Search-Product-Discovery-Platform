@@ -82,30 +82,60 @@ export const searchByImage = async (
     // 3. Return the most similar products
 
     // For this demo, we'll simulate image search by returning products from the category
-    // or random products if no category is specified
+    // or popular products if no category is specified
     const query: any = {};
     if (category) {
       query.category = { $regex: category, $options: "i" };
     }
 
-    // Get products sorted by popularity
+    // Get products sorted by popularity with better variety
     const products = await Product.find(query)
-      .sort({ popularity_score: -1 })
+      .sort({ popularity_score: -1, average_rating: -1 })
       .limit(24)
+      .select(
+        "product_id title brand category subcategory price original_price discount_percentage average_rating rating_count availability images popularity_score",
+      )
       .lean();
+
+    // Transform products to match frontend expectations
+    const transformedProducts = products.map((product) => ({
+      id: product.product_id,
+      _id: product._id,
+      product_id: product.product_id,
+      title: product.title,
+      brand: product.brand,
+      category: product.category,
+      subcategory: product.subcategory,
+      price: product.price,
+      original_price: product.original_price,
+      discount_percentage: product.discount_percentage,
+      average_rating: product.average_rating,
+      rating_count: product.rating_count,
+      availability: product.availability,
+      images: product.images,
+      popularity_score: product.popularity_score,
+      // Add some mock data for better display
+      specifications: [
+        `${product.brand} ${product.category}`,
+        `Popular in ${product.category}`,
+        "High quality product",
+      ],
+      offers: ["Bank Offer", "Exchange Offer", "No Cost EMI"],
+      assured: Math.random() > 0.5,
+    }));
 
     // Return the file path for demonstration purposes
     const filePath = req.file.path.replace(/\\/g, "/");
     const fileName = path.basename(filePath);
 
     res.status(200).json({
-      products,
+      products: transformedProducts,
       uploadedImage: `/uploads/${fileName}`,
       message: "Image search results",
       pagination: {
         currentPage: 1,
         totalPages: 1,
-        totalProducts: products.length,
+        totalProducts: transformedProducts.length,
         hasNext: false,
         hasPrev: false,
       },

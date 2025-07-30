@@ -26,7 +26,7 @@ interface AutosuggestResult {
   error: string | null;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 // Hook to get recently searched terms
 export function useRecentSearches() {
@@ -173,16 +173,25 @@ export function useProductSearch() {
           }
         });
 
-        const response = await fetch(`${API_URL}/autosuggest/search?${params}`);
+        const url = `${API_URL}/autosuggest/search?${params}`;
+        console.log("Making API request to:", url);
+
+        const response = await fetch(url);
+
+        console.log("API response status:", response.status);
 
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error("API error response:", errorText);
           throw new Error("Failed to search products");
         }
 
         const data = await response.json();
+        console.log("API response data:", data);
         setProducts(data.products || []);
         setPagination(data.pagination || null);
       } catch (err) {
+        console.error("Error in searchProducts:", err);
         setError(
           err instanceof Error ? err.message : "Failed to search products",
         );
