@@ -1,10 +1,16 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
+export interface ISearchTerm {
+  query: string;
+  timestamp: Date;
+}
+
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  recentlySearched: ISearchTerm[];
   comparePassword: (candidatePassword: string) => Promise<boolean>;
 }
 
@@ -31,6 +37,12 @@ const UserSchema = new Schema<IUser>(
       minlength: [6, "Password must be at least 6 characters"],
       select: false,
     },
+    recentlySearched: [
+      {
+        query: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true },
 );
@@ -49,4 +61,5 @@ UserSchema.methods.comparePassword = async function (
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+export default mongoose.models.User ||
+  mongoose.model<IUser>("User", UserSchema);

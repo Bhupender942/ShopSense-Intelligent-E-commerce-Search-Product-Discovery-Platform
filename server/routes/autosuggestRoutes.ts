@@ -5,6 +5,7 @@ import {
   getPopularQueries,
   searchProducts,
   getCategories,
+  getRecentlySearched,
 } from "../controllers/autosuggestController";
 
 const router = express.Router();
@@ -23,5 +24,8 @@ router.get("/search", searchProducts);
 
 // GET /api/autosuggest/categories
 router.get("/categories", getCategories);
+
+// GET /api/autosuggest/recent-searches
+router.get("/recent-searches", getRecentlySearched);
 
 export default router;

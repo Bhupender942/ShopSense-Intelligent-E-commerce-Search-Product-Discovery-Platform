@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 
 interface Suggestion {
   query: string;
-  type: "product" | "brand" | "category" | "subcategory";
+  type: "product" | "brand" | "category" | "subcategory" | "recent";
   category: string;
   isTypoCorrection: boolean;
   score: number;
@@ -14,6 +14,11 @@ interface Suggestion {
   };
 }
 
+export interface RecentSearchTerm {
+  query: string;
+  timestamp: string;
+}
+
 interface AutosuggestResult {
   suggestions: Suggestion[];
   hasTypoCorrection: boolean;
@@ -23,43 +28,91 @@ interface AutosuggestResult {
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
+// Hook to get recently searched terms
+export function useRecentSearches() {
+  const [recentSearches, setRecentSearches] = useState<RecentSearchTerm[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchRecentSearches = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/autosuggest/recent-searches`, {
+        credentials: "include", // Important for sending cookies/auth tokens
+      });
+
+      if (response.status === 401) {
+        // User is not authenticated
+        setRecentSearches([]);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch recent searches");
+      }
+
+      const data = await response.json();
+      setRecentSearches(data.recentlySearched || []);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch recent searches",
+      );
+      setRecentSearches([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  return { recentSearches, isLoading, error, fetchRecentSearches };
+}
+
 export function useAutosuggest(
-  query: string, 
+  query: string,
   category?: string,
-  debounceMs: number = 300
+  debounceMs: number = 300,
 ): AutosuggestResult {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [hasTypoCorrection, setHasTypoCorrection] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSuggestions = useCallback(async (searchQuery: string, searchCategory?: string) => {
-    setIsLoading(true);
-    setError(null);
+  const fetchSuggestions = useCallback(
+    async (searchQuery: string, searchCategory?: string) => {
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const params = new URLSearchParams();
-      if (searchQuery.trim()) params.append("q", searchQuery);
-      if (searchCategory) params.append("category", searchCategory);
-      params.append("limit", "8");
+      try {
+        const params = new URLSearchParams();
+        if (searchQuery.trim()) params.append("q", searchQuery);
+        if (searchCategory) params.append("category", searchCategory);
+        params.append("limit", "8");
 
-      const response = await fetch(`${API_URL}/autosuggest/suggestions?${params}`);
+        const response = await fetch(
+          `${API_URL}/autosuggest/suggestions?${params}`,
+        );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch suggestions");
+        if (!response.ok) {
+          throw new Error("Failed to fetch suggestions");
+        }
+
+        const data = await response.json();
+        setSuggestions(data.suggestions || []);
+        setHasTypoCorrection(data.hasTypoCorrection || false);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch suggestions",
+        );
+        setSuggestions([]);
+        setHasTypoCorrection(false);
+      } finally {
+        setIsLoading(false);
       }
-
-      const data = await response.json();
-      setSuggestions(data.suggestions || []);
-      setHasTypoCorrection(data.hasTypoCorrection || false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch suggestions");
-      setSuggestions([]);
-      setHasTypoCorrection(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -74,9 +127,9 @@ export function useAutosuggest(
 
 // Enhanced analytics tracking
 export async function trackSearchAnalytics(
-  query: string, 
-  action: "search" | "click", 
-  category?: string
+  query: string,
+  action: "search" | "click",
+  category?: string,
 ) {
   try {
     await fetch(`${API_URL}/autosuggest/track`, {
@@ -96,46 +149,51 @@ export function useProductSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const searchProducts = useCallback(async (searchParams: {
-    query?: string;
-    category?: string;
-    brand?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    minRating?: number;
-    sortBy?: string;
-    sortOrder?: string;
-    page?: number;
-    limit?: number;
-  }) => {
-    setIsLoading(true);
-    setError(null);
+  const searchProducts = useCallback(
+    async (searchParams: {
+      query?: string;
+      category?: string;
+      brand?: string;
+      minPrice?: number;
+      maxPrice?: number;
+      minRating?: number;
+      sortBy?: string;
+      sortOrder?: string;
+      page?: number;
+      limit?: number;
+    }) => {
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const params = new URLSearchParams();
-      Object.entries(searchParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params.append(key, value.toString());
+      try {
+        const params = new URLSearchParams();
+        Object.entries(searchParams).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            params.append(key, value.toString());
+          }
+        });
+
+        const response = await fetch(`${API_URL}/autosuggest/search?${params}`);
+
+        if (!response.ok) {
+          throw new Error("Failed to search products");
         }
-      });
 
-      const response = await fetch(`${API_URL}/autosuggest/search?${params}`);
-
-      if (!response.ok) {
-        throw new Error("Failed to search products");
+        const data = await response.json();
+        setProducts(data.products || []);
+        setPagination(data.pagination || null);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to search products",
+        );
+        setProducts([]);
+        setPagination(null);
+      } finally {
+        setIsLoading(false);
       }
-
-      const data = await response.json();
-      setProducts(data.products || []);
-      setPagination(data.pagination || null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to search products");
-      setProducts([]);
-      setPagination(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   return { products, pagination, isLoading, error, searchProducts };
 }

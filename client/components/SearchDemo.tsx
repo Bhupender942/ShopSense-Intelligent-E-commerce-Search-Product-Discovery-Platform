@@ -1,17 +1,24 @@
- "use client";
+"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { 
-  Search, 
-  ShoppingBag, 
-  Package, 
-  Star, 
-  Filter, 
-  TrendingUp, 
-  Loader2 
+import {
+  Search,
+  ShoppingBag,
+  Package,
+  Star,
+  Filter,
+  TrendingUp,
+  Loader2,
+  Image as ImageIcon,
 } from "lucide-react";
 import { Autosuggest } from "./ui/autosuggest";
-import { useProductSearch, useAutosuggest, trackSearchAnalytics } from "@/hooks/use-autosuggest";
+import {
+  useProductSearch,
+  useAutosuggest,
+  trackSearchAnalytics,
+} from "@/hooks/use-autosuggest";
+import { useImageSearch } from "@/hooks/use-image-search";
+import ImageSearch from "./ImageSearch";
 
 // Product interface matching backend structure
 interface Product {
@@ -48,6 +55,7 @@ interface SearchBarProps {
   onSearch: (term: string, type?: string) => void;
   className?: string;
   category?: string;
+  onToggleImageSearch: () => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -56,11 +64,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
   className = "",
   category,
+  onToggleImageSearch,
 }) => {
   const handleSelect = async (selectedQuery: string, type?: string) => {
     setQuery(selectedQuery);
     onSearch(selectedQuery, type);
-    
+
     // Track analytics
     await trackSearchAnalytics(selectedQuery, "search", category);
   };
@@ -79,22 +88,33 @@ const SearchBar: React.FC<SearchBarProps> = ({
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" />
           </div>
-          
+
           <Autosuggest
             value={query}
             onChange={setQuery}
             onSelect={handleSelect}
             placeholder="Search for products, brands, categories and more..."
-            className="w-full pl-12 pr-16 py-4 text-lg"
+            className="w-full pl-12 pr-24 py-4 text-lg"
             category={category}
           />
-          
-          <button
-            type="submit"
-            className="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600 hover:text-blue-700 transition-colors"
-          >
-            <Search className="h-6 w-6" />
-          </button>
+
+          <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+            <button
+              type="button"
+              onClick={onToggleImageSearch}
+              className="mr-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full p-2 flex items-center justify-center transition-colors"
+              title="Search by image"
+            >
+              <ImageIcon className="h-5 w-5" />
+            </button>
+
+            <button
+              type="submit"
+              className="bg-blue-600 text-white rounded-full p-2 flex items-center justify-center hover:bg-blue-700 transition-colors"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -120,33 +140,35 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
           {product.category}
         </div>
       </div>
-      
+
       {/* Product Details */}
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
           {product.title}
         </h3>
-        
+
         <p className="text-sm text-gray-600 mb-2">{product.brand}</p>
-        
+
         {/* Rating */}
         {product.average_rating > 0 && (
           <div className="flex items-center mb-2">
             <div className="flex items-center bg-green-500 text-white px-2 py-1 rounded text-sm">
-              <span className="font-semibold">{product.average_rating.toFixed(1)}</span>
+              <span className="font-semibold">
+                {product.average_rating.toFixed(1)}
+              </span>
               <Star className="h-3 w-3 ml-1 fill-current" />
             </div>
             <span className="text-gray-500 text-sm ml-2">
-              ({product.rating_count?.toLocaleString() || '0'})
+              ({product.rating_count?.toLocaleString() || "0"})
             </span>
           </div>
         )}
-        
+
         {/* Price */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-2xl font-bold text-gray-900">
-              ₹{product.price?.toLocaleString() || '0'}
+              ₹{product.price?.toLocaleString() || "0"}
             </span>
             {hasDiscount && product.original_price > product.price && (
               <span className="text-sm text-gray-500 line-through">
@@ -155,7 +177,9 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
             )}
           </div>
           <div className="text-right">
-            <p className="text-xs text-gray-500">{product.availability || 'In Stock'}</p>
+            <p className="text-xs text-gray-500">
+              {product.availability || "In Stock"}
+            </p>
             <p className="text-xs text-blue-600">Free delivery</p>
           </div>
         </div>
@@ -182,58 +206,89 @@ const FilterPanel: React.FC<{
         <Filter className="h-4 w-4" />
         <span>Filters</span>
       </button>
-      
+
       {isOpen && (
         <div className="mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Category
+              </label>
               <select
                 value={filters.category || ""}
-                onChange={(e) => onFiltersChange({ ...filters, category: e.target.value || undefined })}
+                onChange={(e) =>
+                  onFiltersChange({
+                    ...filters,
+                    category: e.target.value || undefined,
+                  })
+                }
                 className="w-full border border-gray-300 rounded-md px-3 py-2"
               >
                 <option value="">All Categories</option>
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
                 ))}
               </select>
             </div>
-            
+
             {/* Brand Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Brand
+              </label>
               <select
                 value={filters.brand || ""}
-                onChange={(e) => onFiltersChange({ ...filters, brand: e.target.value || undefined })}
+                onChange={(e) =>
+                  onFiltersChange({
+                    ...filters,
+                    brand: e.target.value || undefined,
+                  })
+                }
                 className="w-full border border-gray-300 rounded-md px-3 py-2"
               >
                 <option value="">All Brands</option>
-                {brands.slice(0, 20).map(brand => (
-                  <option key={brand} value={brand}>{brand}</option>
+                {brands.slice(0, 20).map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
                 ))}
               </select>
             </div>
-            
+
             {/* Price Range */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Min Price</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Min Price
+              </label>
               <input
                 type="number"
                 value={filters.minPrice || ""}
-                onChange={(e) => onFiltersChange({ ...filters, minPrice: e.target.value ? Number(e.target.value) : undefined })}
+                onChange={(e) =>
+                  onFiltersChange({
+                    ...filters,
+                    minPrice: e.target.value
+                      ? Number(e.target.value)
+                      : undefined,
+                  })
+                }
                 className="w-full border border-gray-300 rounded-md px-3 py-2"
                 placeholder="₹0"
               />
             </div>
-            
+
             {/* Sort By */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Sort By
+              </label>
               <select
                 value={filters.sortBy || "popularity_score"}
-                onChange={(e) => onFiltersChange({ ...filters, sortBy: e.target.value })}
+                onChange={(e) =>
+                  onFiltersChange({ ...filters, sortBy: e.target.value })
+                }
                 className="w-full border border-gray-300 rounded-md px-3 py-2"
               >
                 <option value="popularity_score">Popularity</option>
@@ -257,9 +312,24 @@ export default function SearchDemo() {
   const [categories, setCategories] = useState<string[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
   const [correctedQuery, setCorrectedQuery] = useState<string>("");
+  const [showImageSearch, setShowImageSearch] = useState<boolean>(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [isImageSearchResults, setIsImageSearchResults] =
+    useState<boolean>(false);
 
-  const { products, pagination, isLoading, error, searchProducts } = useProductSearch();
-  const { suggestions: autoSuggestions, hasTypoCorrection } = useAutosuggest(query, filters.category, 300);
+  const { products, pagination, isLoading, error, searchProducts } =
+    useProductSearch();
+  const {
+    searchResults,
+    uploadedImage: searchUploadedImage,
+    isLoading: imageSearchLoading,
+    searchByImage,
+  } = useImageSearch();
+  const { suggestions: autoSuggestions, hasTypoCorrection } = useAutosuggest(
+    query,
+    filters.category,
+    300,
+  );
 
   // Fetch categories and brands on mount
   useEffect(() => {
@@ -269,7 +339,9 @@ export default function SearchDemo() {
   // Detect typo correction
   useEffect(() => {
     if (hasTypoCorrection && autoSuggestions.length > 0) {
-      const correctionSuggestion = autoSuggestions.find(s => s.isTypoCorrection);
+      const correctionSuggestion = autoSuggestions.find(
+        (s) => s.isTypoCorrection,
+      );
       if (correctionSuggestion) {
         setCorrectedQuery(correctionSuggestion.query);
       }
@@ -280,12 +352,19 @@ export default function SearchDemo() {
 
   const fetchCategories = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:8080/api";
       const response = await fetch(`${API_URL}/autosuggest/categories`);
       if (response.ok) {
         const data = await response.json();
-        const categoryList: string[] = data.categories?.map((cat: any) => cat.category).filter(Boolean) || [];
-        const brandList: string[] = data.categories?.flatMap((cat: any) => cat.brands || []).filter((brand): brand is string => typeof brand === 'string') || [];
+        const categoryList: string[] =
+          data.categories?.map((cat: any) => cat.category).filter(Boolean) ||
+          [];
+        const brandList: string[] =
+          data.categories
+            ?.flatMap((cat: any) => cat.brands || [])
+            .filter((brand): brand is string => typeof brand === "string") ||
+          [];
         setCategories(categoryList);
         setBrands([...new Set(brandList)]);
       }
@@ -294,30 +373,33 @@ export default function SearchDemo() {
     }
   };
 
-  const handleSearch = useCallback(async (searchTerm: string, type?: string) => {
-    setQuery(searchTerm);
-    setCorrectedQuery(""); // Clear previous corrections
-    
-    if (!searchTerm.trim()) {
-      setSearched(false);
-      // Clear products when search is empty
-      await searchProducts({ query: "", page: 1, limit: 0 });
-      return;
-    }
+  const handleSearch = useCallback(
+    async (searchTerm: string, type?: string) => {
+      setQuery(searchTerm);
+      setCorrectedQuery(""); // Clear previous corrections
 
-    setSearched(true);
-    const searchParams = {
-      query: searchTerm,
-      ...filters,
-      page: 1,
-      limit: 24,
-    };
+      if (!searchTerm.trim()) {
+        setSearched(false);
+        // Clear products when search is empty
+        await searchProducts({ query: "", page: 1, limit: 0 });
+        return;
+      }
 
-    await searchProducts(searchParams);
-    
-    // Track search analytics
-    await trackSearchAnalytics(searchTerm, "search", filters.category);
-  }, [filters, searchProducts]);
+      setSearched(true);
+      const searchParams = {
+        query: searchTerm,
+        ...filters,
+        page: 1,
+        limit: 24,
+      };
+
+      await searchProducts(searchParams);
+
+      // Track search analytics
+      await trackSearchAnalytics(searchTerm, "search", filters.category);
+    },
+    [filters, searchProducts],
+  );
 
   const handleFiltersChange = (newFilters: SearchFilters) => {
     setFilters(newFilters);
@@ -329,15 +411,37 @@ export default function SearchDemo() {
 
   const handleLoadMore = async () => {
     if (!pagination?.hasNext) return;
-    
+
     const searchParams = {
       query: query,
       ...filters,
       page: (pagination?.currentPage || 1) + 1,
       limit: 24,
     };
-    
+
     await searchProducts(searchParams);
+  };
+
+  const handleImageSearchComplete = useCallback(
+    (results: any[], image: string | null) => {
+      console.log(
+        "Image search completed with results:",
+        results.length,
+        "and image:",
+        image,
+      );
+
+      // Use the results and image passed directly from the ImageSearch component
+      setSearched(true);
+      setIsImageSearchResults(true);
+      setUploadedImage(image);
+      setShowImageSearch(false);
+    },
+    [],
+  );
+
+  const toggleImageSearch = () => {
+    setShowImageSearch((prevState) => !prevState);
   };
 
   return (
@@ -351,15 +455,25 @@ export default function SearchDemo() {
               <h1 className="text-3xl font-bold text-gray-900">Smart Search</h1>
             </div>
           </div>
-          
+
           <div className="flex justify-center">
             <SearchBar
               query={query}
               setQuery={setQuery}
               onSearch={handleSearch}
               category={filters.category}
+              onToggleImageSearch={toggleImageSearch}
             />
           </div>
+
+          {showImageSearch && (
+            <div className="mt-6 max-w-lg mx-auto bg-white shadow-lg border rounded-lg p-5">
+              <ImageSearch
+                onSearchComplete={handleImageSearchComplete}
+                category={filters.category}
+              />
+            </div>
+          )}
         </div>
       </header>
 
@@ -390,11 +504,15 @@ export default function SearchDemo() {
         )}
 
         {/* Loading State */}
-        {isLoading && (
+        {(isLoading || imageSearchLoading) && (
           <div className="flex items-center justify-center py-16">
             <div className="flex items-center space-x-3">
               <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
-              <span className="text-lg text-gray-600">Searching products...</span>
+              <span className="text-lg text-gray-600">
+                {imageSearchLoading
+                  ? "Processing image..."
+                  : "Searching products..."}
+              </span>
             </div>
           </div>
         )}
@@ -402,7 +520,9 @@ export default function SearchDemo() {
         {/* Error State */}
         {error && (
           <div className="text-center py-16">
-            <div className="text-red-500 text-lg mb-2">Something went wrong</div>
+            <div className="text-red-500 text-lg mb-2">
+              Something went wrong
+            </div>
             <div className="text-gray-600">{error}</div>
           </div>
         )}
@@ -425,28 +545,76 @@ export default function SearchDemo() {
         )}
 
         {/* Results Header */}
-        {searched && products.length > 0 && pagination && (
-          <div className="flex items-center justify-between mb-6">
-            <div className="text-gray-600">
-              Showing {((pagination.currentPage - 1) * 24) + 1}-{Math.min(pagination.currentPage * 24, pagination.totalProducts)} of {pagination.totalProducts.toLocaleString()} results for "{query}"
+        {searched &&
+          (isImageSearchResults
+            ? searchResults.length > 0
+            : products.length > 0) &&
+          pagination && (
+            <div>
+              {/* Image search results with uploaded image */}
+              {isImageSearchResults && uploadedImage && (
+                <div className="mb-6 p-4 bg-gray-100 border border-gray-200 rounded-lg">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-24 h-24 flex-shrink-0 bg-white rounded-md overflow-hidden">
+                      <img
+                        src={uploadedImage}
+                        alt="Uploaded image"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-lg text-gray-800 mb-1">
+                        Image Search Results
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Showing similar products based on your uploaded image.
+                      </p>
+                      <button
+                        className="mt-2 text-sm text-blue-600 hover:underline"
+                        onClick={() => {
+                          setIsImageSearchResults(false);
+                          setUploadedImage(null);
+                        }}
+                      >
+                        Clear image search
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between mb-6">
+                <div className="text-gray-600">
+                  Showing {(pagination.currentPage - 1) * 24 + 1}-
+                  {Math.min(
+                    pagination.currentPage * 24,
+                    pagination.totalProducts,
+                  )}{" "}
+                  of {pagination.totalProducts.toLocaleString()} results
+                  {!isImageSearchResults && query && ` for "${query}"`}
+                </div>
+                <div className="text-sm text-gray-500">
+                  Page {pagination.currentPage} of {pagination.totalPages}
+                </div>
+              </div>
             </div>
-            <div className="text-sm text-gray-500">
-              Page {pagination.currentPage} of {pagination.totalPages}
-            </div>
-          </div>
-        )}
+          )}
 
         {/* Product Grid */}
-        {searched && products.length > 0 && (
+        {searched && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-              {products.map((product: Product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
+              {isImageSearchResults
+                ? searchResults.map((product: Product) => (
+                    <ProductCard key={product._id} product={product} />
+                  ))
+                : products.map((product: Product) => (
+                    <ProductCard key={product._id} product={product} />
+                  ))}
             </div>
 
-            {/* Load More Button */}
-            {pagination?.hasNext && (
+            {/* Load More Button - only for text search, not image search */}
+            {!isImageSearchResults && pagination?.hasNext && (
               <div className="text-center">
                 <button
                   onClick={handleLoadMore}
@@ -468,23 +636,37 @@ export default function SearchDemo() {
               Find exactly what you're looking for
             </h2>
             <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
-              Start typing in the search bar above to see intelligent suggestions based on products, brands, and categories. Our smart search understands what you're looking for.
+              Start typing in the search bar above to see intelligent
+              suggestions based on products, brands, and categories. Our smart
+              search understands what you're looking for.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               <div className="text-center p-6">
                 <Package className="h-12 w-12 text-blue-500 mx-auto mb-3" />
-                <h3 className="font-semibold text-gray-800 mb-2">Smart Suggestions</h3>
-                <p className="text-gray-600 text-sm">Get intelligent autocomplete suggestions as you type</p>
+                <h3 className="font-semibold text-gray-800 mb-2">
+                  Smart Suggestions
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Get intelligent autocomplete suggestions as you type
+                </p>
               </div>
               <div className="text-center p-6">
                 <TrendingUp className="h-12 w-12 text-green-500 mx-auto mb-3" />
-                <h3 className="font-semibold text-gray-800 mb-2">Trending Searches</h3>
-                <p className="text-gray-600 text-sm">See what other users are searching for</p>
+                <h3 className="font-semibold text-gray-800 mb-2">
+                  Trending Searches
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  See what other users are searching for
+                </p>
               </div>
               <div className="text-center p-6">
                 <Star className="h-12 w-12 text-yellow-500 mx-auto mb-3" />
-                <h3 className="font-semibold text-gray-800 mb-2">Quality Results</h3>
-                <p className="text-gray-600 text-sm">Find products with ratings, prices, and detailed information</p>
+                <h3 className="font-semibold text-gray-800 mb-2">
+                  Quality Results
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Find products with ratings, prices, and detailed information
+                </p>
               </div>
             </div>
           </div>
