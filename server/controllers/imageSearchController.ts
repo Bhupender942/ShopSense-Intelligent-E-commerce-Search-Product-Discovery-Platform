@@ -93,7 +93,7 @@ export const searchByImage = async (
       .sort({ popularity_score: -1, average_rating: -1 })
       .limit(24)
       .select(
-        "product_id title brand category subcategory price original_price discount_percentage average_rating rating_count availability images popularity_score",
+        "product_id title brand category subcategory price original_price discount_percentage average_rating rating_count availability images popularity_score description",
       )
       .lean();
 
@@ -114,6 +114,7 @@ export const searchByImage = async (
       availability: product.availability,
       images: product.images,
       popularity_score: product.popularity_score,
+      description: product.description,
       // Add some mock data for better display
       specifications: [
         `${product.brand} ${product.category}`,

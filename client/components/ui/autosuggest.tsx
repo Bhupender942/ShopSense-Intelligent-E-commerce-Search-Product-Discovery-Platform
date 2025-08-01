@@ -11,9 +11,9 @@ import {
 } from "lucide-react";
 import {
   useAutosuggest,
-  useRecentSearches,
   trackSearchAnalytics,
 } from "@/hooks/use-autosuggest";
+import { useRecentSearches } from "@/hooks/use-recent-searches";
 
 interface AutosuggestProps {
   value: string;
@@ -102,7 +102,7 @@ export const Autosuggest: React.FC<AutosuggestProps> = ({
     value,
     category,
   );
-  const { recentSearches, fetchRecentSearches } = useRecentSearches();
+  const { recentSearches, getRecentSearches } = useRecentSearches();
 
   useEffect(() => {
     if (value.trim().length > 0) {
@@ -169,7 +169,7 @@ export const Autosuggest: React.FC<AutosuggestProps> = ({
     } else {
       // Show recent searches if there's no text
       setShowRecent(true);
-      fetchRecentSearches();
+      getRecentSearches();
     }
   };
 
@@ -242,15 +242,15 @@ export const Autosuggest: React.FC<AutosuggestProps> = ({
                   No recent searches found
                 </div>
               ) : (
-                recentSearches.slice(0, 5).map((item, index) => (
+                recentSearches.slice(0, 5).map((query, index) => (
                   <div
-                    key={`recent-${index}-${item.query}`}
+                    key={`recent-${index}-${query}`}
                     className={`px-4 py-3 cursor-pointer flex items-center hover:bg-gray-50 border-b border-gray-100 ${
                       index === selectedIndex ? "bg-blue-50" : ""
                     }`}
                     onClick={() =>
                       handleSelect({
-                        query: item.query,
+                        query: query,
                         type: "recent",
                         category: "recent",
                         isTypoCorrection: false,
@@ -265,22 +265,11 @@ export const Autosuggest: React.FC<AutosuggestProps> = ({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center">
                         <div className="text-sm text-gray-900 truncate font-medium">
-                          {item.query}
+                          {query}
                         </div>
                         <span className="ml-2 px-1.5 py-0.5 text-xs bg-blue-100 text-blue-600 rounded">
                           Recent
                         </span>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-0.5">
-                        {new Date(item.timestamp).toLocaleDateString(
-                          undefined,
-                          {
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          },
-                        )}
                       </div>
                     </div>
                   </div>

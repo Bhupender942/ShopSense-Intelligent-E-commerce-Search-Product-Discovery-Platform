@@ -4,6 +4,7 @@ import { Button } from "./button";
 import { Autosuggest } from "./autosuggest";
 import { VoiceSearch } from "./voice-search";
 import { trackSearchAnalytics } from "@/hooks/use-autosuggest";
+import { useRecentSearches } from "@/hooks/use-recent-searches";
 
 interface EnhancedSearchProps {
   onSearch: (query: string, type?: string) => void;
@@ -25,13 +26,18 @@ export const EnhancedSearch: React.FC<EnhancedSearchProps> = ({
   showImageSearch = true,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { addRecentSearch } = useRecentSearches();
 
   const handleSearch = async (query: string = searchQuery, type?: string) => {
     if (query.trim()) {
       // Track search analytics
       await trackSearchAnalytics(query.trim(), "search", category);
+<<<<<<< HEAD
 
       // Always use query understanding for search (this will be properly integrated in the search results page)
+=======
+      addRecentSearch(query.trim());
+>>>>>>> 7423c813cb796cac3b5131128c4da0ef146495d6
       onSearch(query.trim(), type);
     }
   };

@@ -6,6 +6,7 @@ import {
   getCategorySuggestions,
 } from "../utils/autosuggest";
 import { convertQueryToFilters } from "../utils/queryToFilter";
+import { processSearchQuery } from "../utils/synonyms";
 import SearchSuggestion from "../models/SearchSuggestion";
 import Product from "../models/Products";
 import User from "../models/User";
@@ -188,74 +189,19 @@ export const searchProducts = async (
 
     const filter: any = {};
 
-    // Track if we're using any derived filters
-    let usingDerivedFilters = false;
-    let inferredFilters: Record<string, any> = {};
-    let inferredIntent: string | undefined;
-
-    // Handle text search and derive filters using NLP when appropriate
+    // Handle text search
     if (query && typeof query === "string") {
-      // Convert query to structured filters using NLP (if enabled)
-      if (use_nlp === "true" && !category && !brand && !gender) {
-        try {
-          const queryUnderstanding = await convertQueryToFilters(query);
-          console.log("Query understanding:", queryUnderstanding);
-
-          // Only apply derived filters if confidence is reasonable
-          if (queryUnderstanding.confidence >= 0.6) {
-            inferredFilters = queryUnderstanding.filters;
-            inferredIntent = queryUnderstanding.inferredIntent;
-            usingDerivedFilters = true;
-
-            // Apply inferred category filter if available
-            if (inferredFilters.category) {
-              filter.category = {
-                $regex: inferredFilters.category,
-                $options: "i",
-              };
-            }
-
-            // Apply inferred subcategory filter if available
-            if (inferredFilters.subcategory) {
-              filter.subcategory = {
-                $regex: inferredFilters.subcategory,
-                $options: "i",
-              };
-            }
-
-            // Apply inferred gender filter if available
-            if (inferredFilters.gender) {
-              filter.gender = { $regex: inferredFilters.gender, $options: "i" };
-            }
-
-            // Apply price range filter if available
-            if (inferredFilters.priceRange === "low") {
-              // For budget/low price range, filter to products under 20,000
-              filter.price = { $lte: 20000 };
-              console.log("Applied budget price filter: price <= 20000");
-            } else if (inferredFilters.priceRange === "high") {
-              // For premium/high price range, filter to products above 50,000
-              filter.price = { $gte: 50000 };
-              console.log("Applied premium price filter: price >= 50000");
-            }
-          }
-        } catch (error) {
-          console.error("Error in query understanding:", error);
-          // Continue with regular search if NLP fails
-        }
-      }
-
       // Use text search if available, otherwise use regex
       try {
-        filter.$text = { $search: query };
+        filter.$text = { $search: processedQuery };
       } catch (error) {
         // Fallback to regex search if text index is not available
         filter.$or = [
-          { title: { $regex: query, $options: "i" } },
-          { brand: { $regex: query, $options: "i" } },
-          { category: { $regex: query, $options: "i" } },
-          { subcategory: { $regex: query, $options: "i" } },
-          { tags: { $regex: query, $options: "i" } },
+          { title: { $regex: processedQuery, $options: "i" } },
+          { brand: { $regex: processedQuery, $options: "i" } },
+          { category: { $regex: processedQuery, $options: "i" } },
+          { subcategory: { $regex: processedQuery, $options: "i" } },
+          { tags: { $regex: processedQuery, $options: "i" } },
         ];
       }
     }
@@ -338,7 +284,7 @@ export const searchProducts = async (
           .skip(skip)
           .limit(Number(limit))
           .select(
-            "product_id title brand category subcategory gender price original_price discount_percentage average_rating rating_count availability images popularity_score date_added tags",
+            "product_id title brand category subcategory gender price original_price discount_percentage average_rating rating_count availability images popularity_score date_added tags description",
           )
           .lean(),
         Product.countDocuments(filter),
@@ -361,7 +307,7 @@ export const searchProducts = async (
             .skip(skip)
             .limit(Number(limit))
             .select(
-              "product_id title brand category subcategory gender price original_price discount_percentage average_rating rating_count availability images popularity_score date_added tags",
+              "product_id title brand category subcategory gender price original_price discount_percentage average_rating rating_count availability images popularity_score date_added tags description",
             )
             .lean(),
           Product.countDocuments(fallbackFilter),

@@ -1,5 +1,6 @@
 import SearchSuggestion from "../models/SearchSuggestion";
 import Product from "../models/Products";
+import { processSearchQuery } from "./synonyms";
 
 // Server-side Trie implementation for fast prefix matching
 class TrieNode {
@@ -87,7 +88,7 @@ function levenshteinDistance(str1: string, str2: string): number {
   return previousRow[str2.length];
 }
 
-// Enhanced scoring with multiple factors
+// Enhanced scoring with multiple factors and category prioritization
 function calculateSuggestionScore(
   suggestion: any,
   prefix: string,
@@ -111,6 +112,31 @@ function calculateSuggestionScore(
     }
   }
 
+  // Category-based priority scoring (highest priority categories)
+  const priorityCategories = {
+    shoes: 1200,
+    clothing: 1200,
+    mobile: 1200,
+    toys: 1200,
+    electronics: 1000,
+    fashion: 1000,
+    footwear: 1000,
+    smartphones: 1000,
+    gaming: 1000,
+    sports: 900,
+    home: 800,
+    books: 700,
+    automotive: 600,
+    beauty: 600,
+    health: 500,
+  };
+
+  const suggestionCategory = suggestion.category?.toLowerCase() || "";
+  const categoryScore =
+    priorityCategories[suggestionCategory as keyof typeof priorityCategories] ||
+    500;
+  score += categoryScore;
+
   // Type-based scoring with enhanced weights
   const typeScores = {
     category: 900,
@@ -119,6 +145,11 @@ function calculateSuggestionScore(
     product: 300,
   };
   score += typeScores[suggestion.type as keyof typeof typeScores] || 100;
+
+  // Popularity-based scoring (using popularity_score from products)
+  if (suggestion.metadata?.popularity_score) {
+    score += Math.min(suggestion.metadata.popularity_score * 10, 500);
+  }
 
   // Search analytics scoring
   if (suggestion.searchCount) {
@@ -211,9 +242,14 @@ async function buildSuggestionCache(): Promise<void> {
           {
             query: product.title,
             type: "product",
+            category: product.category?.toLowerCase().replace(/\s+/g, "-"),
             searchCount: Math.floor((product.popularity_score || 0) * 2),
             quality: (product.popularity_score || 0) / 10,
-            metadata: { avgRating: product.average_rating },
+            metadata: {
+              avgRating: product.average_rating,
+              popularity_score: product.popularity_score || 0,
+              productCount: 1,
+            },
           },
           product.title,
           true,
@@ -228,8 +264,13 @@ async function buildSuggestionCache(): Promise<void> {
           {
             query: product.brand,
             type: "brand",
+            category: product.category?.toLowerCase().replace(/\s+/g, "-"),
             searchCount: Math.floor((product.popularity_score || 0) * 3),
             quality: (product.popularity_score || 0) / 10,
+            metadata: {
+              popularity_score: product.popularity_score || 0,
+              avgRating: product.average_rating,
+            },
           },
           product.brand,
           true,
@@ -279,7 +320,9 @@ export async function getAutosuggestResults(
     };
   }
 
-  const cleanPrefix = prefix.trim().toLowerCase();
+  // Process prefix with synonyms
+  const processedPrefix = processSearchQuery(prefix.trim().toLowerCase());
+  const cleanPrefix = processedPrefix;
 
   // Build/refresh cache
   await buildSuggestionCache();
@@ -388,6 +431,7 @@ export async function getAutosuggestResults(
     metadata: {
       productCount: 1,
       avgRating: product.average_rating,
+      popularity_score: product.popularity_score || 0,
     },
   }));
 
@@ -708,49 +752,139 @@ export async function getCategorySuggestions(
   return suggestions;
 }
 
-// Initialize some common suggestions for demo
+// Initialize some common suggestions for demo with priority categories
 async function initializeCommonSuggestions(): Promise<void> {
   const commonTerms = [
+    // High priority categories (shoes, clothing, mobile, toys)
     {
-      query: "phone",
+      query: "shoes",
       type: "category",
-      category: "electronics",
-      searchCount: 150,
+      category: "shoes",
+      searchCount: 200,
+      popularity_score: 95,
     },
     {
       query: "mobile",
       type: "category",
-      category: "electronics",
-      searchCount: 120,
+      category: "mobile",
+      searchCount: 180,
+      popularity_score: 90,
     },
-    { query: "shoe", type: "category", category: "clothing", searchCount: 90 },
     {
-      query: "shoes",
+      query: "clothing",
       type: "category",
       category: "clothing",
-      searchCount: 160,
+      searchCount: 170,
+      popularity_score: 85,
     },
+    {
+      query: "toys",
+      type: "category",
+      category: "toys",
+      searchCount: 160,
+      popularity_score: 80,
+    },
+    {
+      query: "phone",
+      type: "category",
+      category: "mobile",
+      searchCount: 150,
+      popularity_score: 85,
+    },
+    {
+      query: "smartphone",
+      type: "category",
+      category: "mobile",
+      searchCount: 140,
+      popularity_score: 80,
+    },
+    {
+      query: "footwear",
+      type: "category",
+      category: "shoes",
+      searchCount: 130,
+      popularity_score: 75,
+    },
+    {
+      query: "sneakers",
+      type: "category",
+      category: "shoes",
+      searchCount: 120,
+      popularity_score: 70,
+    },
+    {
+      query: "shirt",
+      type: "category",
+      category: "clothing",
+      searchCount: 110,
+      popularity_score: 65,
+    },
+    {
+      query: "dress",
+      type: "category",
+      category: "clothing",
+      searchCount: 100,
+      popularity_score: 60,
+    },
+    // Popular brands
+    {
+      query: "nike",
+      type: "brand",
+      category: "shoes",
+      searchCount: 140,
+      popularity_score: 85,
+    },
+    {
+      query: "samsung",
+      type: "brand",
+      category: "mobile",
+      searchCount: 180,
+      popularity_score: 90,
+    },
+    {
+      query: "iphone",
+      type: "product",
+      category: "mobile",
+      searchCount: 200,
+      popularity_score: 95,
+    },
+    {
+      query: "adidas",
+      type: "brand",
+      category: "shoes",
+      searchCount: 120,
+      popularity_score: 75,
+    },
+    // Electronics
     {
       query: "laptop",
       type: "category",
       category: "electronics",
       searchCount: 100,
+      popularity_score: 60,
     },
     {
-      query: "iphone",
-      type: "product",
+      query: "headphones",
+      type: "category",
       category: "electronics",
-      searchCount: 200,
+      searchCount: 90,
+      popularity_score: 55,
     },
-    { query: "nike", type: "brand", category: "clothing", searchCount: 140 },
+    // Gaming/Toys
     {
-      query: "samsung",
+      query: "gaming",
+      type: "category",
+      category: "toys",
+      searchCount: 80,
+      popularity_score: 50,
+    },
+    {
+      query: "lego",
       type: "brand",
-      category: "electronics",
-      searchCount: 180,
+      category: "toys",
+      searchCount: 70,
+      popularity_score: 45,
     },
-    { query: "book", type: "category", category: "books", searchCount: 65 },
-    { query: "shirt", type: "category", category: "clothing", searchCount: 70 },
   ];
 
   for (const term of commonTerms) {
@@ -765,6 +899,7 @@ async function initializeCommonSuggestions(): Promise<void> {
         metadata: {
           productCount: Math.floor(Math.random() * 50) + 10,
           avgRating: 3.5 + Math.random() * 1.5,
+          popularity_score: term.popularity_score || 50,
         },
       });
     }

@@ -17,6 +17,7 @@ import {
   useAutosuggest,
   trackSearchAnalytics,
 } from "@/hooks/use-autosuggest";
+import { useRecentSearches } from "@/hooks/use-recent-searches";
 import { useImageSearch } from "@/hooks/use-image-search";
 import ImageSearch from "./ImageSearch";
 
@@ -330,6 +331,7 @@ export default function SearchDemo() {
     filters.category,
     300,
   );
+  const { addRecentSearch } = useRecentSearches();
 
   // Fetch categories and brands on mount
   useEffect(() => {
@@ -397,8 +399,11 @@ export default function SearchDemo() {
 
       // Track search analytics
       await trackSearchAnalytics(searchTerm, "search", filters.category);
+      
+      // Add to recent searches
+      addRecentSearch(searchTerm);
     },
-    [filters, searchProducts],
+    [filters, searchProducts, addRecentSearch],
   );
 
   const handleFiltersChange = (newFilters: SearchFilters) => {

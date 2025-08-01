@@ -9,6 +9,7 @@ import {
   getTestProducts,
   analyzeQuery,
 } from "../controllers/autosuggestController";
+import { processSearchQuery, getSynonymsForCategory } from "../utils/synonyms";
 
 const router = express.Router();
 
@@ -35,5 +36,29 @@ router.get("/test-products", getTestProducts);
 
 // GET /api/autosuggest/analyze-query?q=sneakers for men
 router.get("/analyze-query", analyzeQuery);
+
+// GET /api/autosuggest/test-synonyms?query=shoes (for testing synonyms)
+router.get("/test-synonyms", (req, res) => {
+  const { query, category } = req.query;
+
+  if (query) {
+    const processed = processSearchQuery(query as string);
+    res.json({
+      original: query,
+      processed: processed,
+      isSynonym: query !== processed,
+    });
+  } else if (category) {
+    const synonyms = getSynonymsForCategory(category as string);
+    res.json({
+      category: category,
+      synonyms: synonyms,
+    });
+  } else {
+    res.json({
+      message: "Use ?query=shoes or ?category=footwear to test synonyms",
+    });
+  }
+});
 
 export default router;
