@@ -36,7 +36,6 @@ router.get("/test-products", getTestProducts);
 
 // GET /api/autosuggest/analyze-query?q=sneakers for men
 router.get("/analyze-query", analyzeQuery);
-
 // GET /api/autosuggest/test-synonyms?query=shoes (for testing synonyms)
 router.get("/test-synonyms", (req, res) => {
   const { query, category } = req.query;

@@ -17,7 +17,6 @@ export default function Home() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Add use_nlp parameter to enable query understanding on the search page
       addRecentSearch(searchQuery.trim());
       navigate(
         `/search?q=${encodeURIComponent(searchQuery.trim())}&use_nlp=true`,
@@ -28,7 +27,10 @@ export default function Home() {
   const handleVoiceSearchResult = (transcript: string) => {
     setSearchQuery(transcript);
     if (transcript.trim()) {
-      navigate(`/search?q=${encodeURIComponent(transcript.trim())}`);
+      addRecentSearch(transcript.trim());
+      navigate(
+        `/search?q=${encodeURIComponent(transcript.trim())}&use_nlp=true`,
+      );
     }
   };
 
