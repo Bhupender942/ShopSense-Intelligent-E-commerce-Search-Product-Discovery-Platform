@@ -203,6 +203,10 @@ export function useProductSearch() {
 
         const data = await response.json();
         console.log("API response data:", data);
+        console.log(
+          "API response queryUnderstanding:",
+          data.queryUnderstanding,
+        );
         setProducts(data.products || []);
 
         // Include query understanding data in the pagination object
@@ -211,6 +215,10 @@ export function useProductSearch() {
           queryUnderstanding: data.queryUnderstanding,
         };
 
+        console.log(
+          "Pagination with query understanding:",
+          paginationWithQueryUnderstanding,
+        );
         setPagination(paginationWithQueryUnderstanding);
       } catch (err) {
         console.error("Error in searchProducts:", err);

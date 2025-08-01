@@ -166,8 +166,13 @@ export default function SearchResults() {
   const queryUnderstanding =
     !isImageSearch && pagination ? pagination.queryUnderstanding : undefined;
 
+  console.log("SearchResults - pagination:", pagination);
+  console.log("SearchResults - queryUnderstanding:", queryUnderstanding);
+  console.log("SearchResults - current filters:", filters);
+
   // Apply inferred filters to the UI filters if we have query understanding results
   useEffect(() => {
+    console.log("Query understanding effect triggered:", queryUnderstanding);
     if (
       queryUnderstanding?.usingDerivedFilters &&
       queryUnderstanding.inferredFilters
@@ -176,30 +181,31 @@ export default function SearchResults() {
       const inferredFilters = queryUnderstanding.inferredFilters;
       let filterChanged = false;
 
+      console.log("Processing inferred filters:", inferredFilters);
+      console.log("Current filters:", filters);
+
       // Update category
       if (inferredFilters.category && newFilters.categories.length === 0) {
         newFilters.categories = [inferredFilters.category];
         filterChanged = true;
+        console.log("Added category filter:", inferredFilters.category);
       }
 
       // Update brand
       if (inferredFilters.brand && newFilters.brands.length === 0) {
         newFilters.brands = [inferredFilters.brand];
         filterChanged = true;
+        console.log("Added brand filter:", inferredFilters.brand);
       }
 
       // Update gender filter
       if (inferredFilters.gender && newFilters.gender.length === 0) {
-        // Map the gender format to what the UI expects
-        const gender =
-          inferredFilters.gender === "male"
-            ? "Men"
-            : inferredFilters.gender === "female"
-              ? "Women"
-              : inferredFilters.gender;
-
+        // The query understanding system returns "Men", "Women", etc.
+        // Map to what the UI expects (which is the same format)
+        const gender = inferredFilters.gender;
         newFilters.gender = [gender];
         filterChanged = true;
+        console.log("Added gender filter:", gender);
       }
 
       // Update price range filter
@@ -208,18 +214,25 @@ export default function SearchResults() {
           // For budget products, set price range to 199-20000
           newFilters.priceRange = [199, 20000];
           filterChanged = true;
+          console.log("Added low price range filter");
         } else if (inferredFilters.priceRange === "high") {
           // For premium products, set price range to 50000-max
           newFilters.priceRange = [50000, 298199];
           filterChanged = true;
+          console.log("Added high price range filter");
         }
       }
 
       // Only update filters if something changed
       if (filterChanged) {
         console.log("Applying inferred filters:", newFilters);
+        console.log("Original inferred filters:", inferredFilters);
         setFilters(newFilters);
+      } else {
+        console.log("No filter changes needed");
       }
+    } else {
+      console.log("No query understanding data or not using derived filters");
     }
   }, [queryUnderstanding]);
 

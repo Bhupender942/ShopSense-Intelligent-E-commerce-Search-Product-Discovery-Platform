@@ -22,17 +22,17 @@ interface QueryFilterResult {
 // Knowledge graph - taxonomy mapping
 const productKnowledgeGraph: EntityMap = {
   // Main Categories
-  electronics: {
+  Electronics: {
     type: "category",
     attributes: {
       subcategories: [
-        "smartphones",
-        "laptops",
-        "televisions",
-        "cameras",
-        "audio",
-        "wearables",
-        "computer accessories",
+        "Smartphones",
+        "Laptops",
+        "Televisions",
+        "Cameras",
+        "Audio",
+        "Wearables",
+        "Computer Accessories",
       ],
       brands: [
         "samsung",
@@ -47,127 +47,127 @@ const productKnowledgeGraph: EntityMap = {
       relatedTerms: ["gadgets", "tech", "devices", "electronic"],
     },
   },
-  clothing: {
+  Clothing: {
     type: "category",
     attributes: {
       subcategories: [
-        "t-shirts",
-        "shirts",
-        "trousers",
-        "jeans",
-        "kurtas",
-        "sarees",
-        "dresses",
-        "tops",
-        "jackets",
+        "T-Shirts",
+        "Shirts",
+        "Trousers",
+        "Jeans",
+        "Kurtas",
+        "Sarees",
+        "Dresses",
+        "Tops",
+        "Jackets",
       ],
-      gender: ["men", "women", "unisex"],
+      gender: ["Men", "Women", "Unisex"],
       relatedTerms: ["wear", "apparel", "clothes", "garments", "outfit"],
     },
   },
-  footwear: {
+  Footwear: {
     type: "category",
     attributes: {
       subcategories: [
-        "casual shoes",
-        "sports shoes",
-        "formal shoes",
-        "sandals",
-        "flip flops",
-        "boots",
+        "Casual Shoes",
+        "Sports Shoes",
+        "Formal Shoes",
+        "Sandals",
+        "Flip Flops",
+        "Boots",
       ],
-      gender: ["men", "women", "unisex"],
+      gender: ["Men", "Women", "Unisex"],
       relatedTerms: ["shoes", "footwears", "slippers", "shoe", "sandal"],
     },
   },
-  appliances: {
+  Appliances: {
     type: "category",
     attributes: {
       subcategories: [
-        "refrigerators",
-        "washing machines",
-        "air conditioners",
-        "microwaves",
-        "water purifiers",
+        "Refrigerators",
+        "Washing Machines",
+        "Air Conditioners",
+        "Microwaves",
+        "Water Purifiers",
       ],
       relatedTerms: ["home appliance", "appliance", "electronic", "household"],
     },
   },
-  "beauty & personal care": {
+  "Beauty & Personal Care": {
     type: "category",
     attributes: {
       subcategories: [
-        "skincare",
-        "haircare",
-        "makeup",
-        "fragrances",
-        "grooming",
+        "Skincare",
+        "Haircare",
+        "Makeup",
+        "Fragrances",
+        "Grooming",
       ],
-      gender: ["men", "women", "unisex"],
+      gender: ["Men", "Women", "Unisex"],
       relatedTerms: ["beauty", "personal care", "cosmetics", "grooming"],
     },
   },
-  "home & furniture": {
+  "Home & Furniture": {
     type: "category",
     attributes: {
       subcategories: [
-        "beds",
-        "sofas",
-        "dining tables",
-        "wardrobes",
-        "kitchen & dining",
-        "home decor",
+        "Beds",
+        "Sofas",
+        "Dining Tables",
+        "Wardrobes",
+        "Kitchen & Dining",
+        "Home Decor",
       ],
       relatedTerms: ["furniture", "home", "decor", "interior", "household"],
     },
   },
-  "sports & fitness": {
+  "Sports & Fitness": {
     type: "category",
     attributes: {
       subcategories: [
-        "exercise equipment",
-        "sports wear",
-        "outdoor sports",
-        "fitness gadgets",
-        "yoga",
+        "Exercise Equipment",
+        "Sports Wear",
+        "Outdoor Sports",
+        "Fitness Gadgets",
+        "Yoga",
       ],
-      gender: ["men", "women", "unisex"],
+      gender: ["Men", "Women", "Unisex"],
       relatedTerms: ["gym", "fitness", "workout", "sports", "athletic"],
     },
   },
-  books: {
+  Books: {
     type: "category",
     attributes: {
       subcategories: [
-        "fiction",
-        "non-fiction",
-        "educational",
-        "comics",
-        "biography",
+        "Fiction",
+        "Non-Fiction",
+        "Educational",
+        "Comics",
+        "Biography",
       ],
       relatedTerms: ["book", "reading", "novel", "literature", "text"],
     },
   },
-  "toys & baby": {
+  "Toys & Baby": {
     type: "category",
     attributes: {
       subcategories: [
-        "toys",
-        "baby care",
-        "school supplies",
-        "remote control toys",
-        "outdoor play",
+        "Toys",
+        "Baby Care",
+        "School Supplies",
+        "Remote Control Toys",
+        "Outdoor Play",
       ],
-      gender: ["boys", "girls", "unisex"],
+      gender: ["Boys", "Girls", "Unisex"],
       relatedTerms: ["kids", "child", "toy", "baby products", "infant"],
     },
   },
 
   // Electronics Subcategories
-  smartphones: {
+  Smartphones: {
     type: "subcategory",
     attributes: {
-      parentCategory: "electronics",
+      parentCategory: "Electronics",
       brands: [
         "samsung",
         "apple",
@@ -180,13 +180,20 @@ const productKnowledgeGraph: EntityMap = {
         "nokia",
         "google",
       ],
-      aliases: ["mobile", "phone", "cell phone", "mobiles", "phones"],
+      aliases: [
+        "mobile",
+        "phone",
+        "cell phone",
+        "mobiles",
+        "phones",
+        "smartphone",
+      ],
     },
   },
-  laptops: {
+  Laptops: {
     type: "subcategory",
     attributes: {
-      parentCategory: "electronics",
+      parentCategory: "Electronics",
       brands: [
         "hp",
         "dell",
@@ -202,10 +209,10 @@ const productKnowledgeGraph: EntityMap = {
       aliases: ["laptop", "notebook", "portable computer", "laptops"],
     },
   },
-  televisions: {
+  Televisions: {
     type: "subcategory",
     attributes: {
-      parentCategory: "electronics",
+      parentCategory: "Electronics",
       brands: [
         "samsung",
         "lg",
@@ -221,10 +228,10 @@ const productKnowledgeGraph: EntityMap = {
       aliases: ["tv", "television", "smart tv", "tvs", "led tv", "lcd tv"],
     },
   },
-  cameras: {
+  Cameras: {
     type: "subcategory",
     attributes: {
-      parentCategory: "electronics",
+      parentCategory: "Electronics",
       brands: [
         "canon",
         "nikon",
@@ -240,18 +247,18 @@ const productKnowledgeGraph: EntityMap = {
   },
 
   // Footwear Subcategories
-  shoes: {
+  Shoes: {
     type: "subcategory",
     attributes: {
-      parentCategory: "footwear",
-      gender: ["men", "women", "unisex"],
+      parentCategory: "Footwear",
+      gender: ["Men", "Women", "Unisex"],
       aliases: ["shoe", "footwear"],
     },
   },
-  "casual shoes": {
+  "Casual Shoes": {
     type: "subcategory",
     attributes: {
-      parentCategory: "footwear",
+      parentCategory: "Footwear",
       brands: [
         "nike",
         "adidas",
@@ -262,14 +269,14 @@ const productKnowledgeGraph: EntityMap = {
         "vans",
         "bata",
       ],
-      idealFor: ["men", "women", "unisex"],
-      aliases: ["casual shoe", "everyday shoes", "sneakers"],
+      idealFor: ["Men", "Women", "Unisex"],
+      aliases: ["casual shoe", "everyday shoes", "sneakers", "sneaker"],
     },
   },
-  "sports shoes": {
+  "Sports Shoes": {
     type: "subcategory",
     attributes: {
-      parentCategory: "footwear",
+      parentCategory: "Footwear",
       brands: [
         "nike",
         "adidas",
@@ -280,20 +287,21 @@ const productKnowledgeGraph: EntityMap = {
         "under armour",
         "fila",
       ],
-      idealFor: ["men", "women", "unisex"],
+      idealFor: ["Men", "Women", "Unisex"],
       aliases: [
         "running shoes",
         "athletic shoes",
         "sports footwear",
         "training shoes",
         "sneakers",
+        "sneaker",
       ],
     },
   },
-  "formal shoes": {
+  "Formal Shoes": {
     type: "subcategory",
     attributes: {
-      parentCategory: "footwear",
+      parentCategory: "Footwear",
       brands: [
         "clarks",
         "bata",
@@ -303,7 +311,7 @@ const productKnowledgeGraph: EntityMap = {
         "arrow",
         "louis philippe",
       ],
-      idealFor: ["men", "women"],
+      idealFor: ["Men", "Women"],
       aliases: [
         "formal footwear",
         "dress shoes",
@@ -313,10 +321,10 @@ const productKnowledgeGraph: EntityMap = {
       ],
     },
   },
-  sandals: {
+  Sandals: {
     type: "subcategory",
     attributes: {
-      parentCategory: "footwear",
+      parentCategory: "Footwear",
       brands: [
         "bata",
         "paragon",
@@ -327,14 +335,14 @@ const productKnowledgeGraph: EntityMap = {
         "adidas",
         "crocs",
       ],
-      idealFor: ["men", "women", "unisex"],
+      idealFor: ["Men", "Women", "Unisex"],
       aliases: ["flip flops", "sandal", "open shoes", "slippers", "flats"],
     },
   },
-  "flip flops": {
+  "Flip Flops": {
     type: "subcategory",
     attributes: {
-      parentCategory: "footwear",
+      parentCategory: "Footwear",
       brands: [
         "bata",
         "paragon",
@@ -346,14 +354,14 @@ const productKnowledgeGraph: EntityMap = {
         "crocs",
         "havaianas",
       ],
-      idealFor: ["men", "women", "unisex"],
+      idealFor: ["Men", "Women", "Unisex"],
       aliases: ["slippers", "hawaii chappal", "beach slippers", "flip flop"],
     },
   },
-  boots: {
+  Boots: {
     type: "subcategory",
     attributes: {
-      parentCategory: "footwear",
+      parentCategory: "Footwear",
       brands: [
         "woodland",
         "red tape",
@@ -364,7 +372,7 @@ const productKnowledgeGraph: EntityMap = {
         "cat",
         "clarks",
       ],
-      idealFor: ["men", "women", "unisex"],
+      idealFor: ["Men", "Women", "Unisex"],
       aliases: [
         "ankle boots",
         "leather boots",
@@ -376,10 +384,10 @@ const productKnowledgeGraph: EntityMap = {
   },
 
   // Clothing Subcategories
-  "t-shirts": {
+  "T-Shirts": {
     type: "subcategory",
     attributes: {
-      parentCategory: "clothing",
+      parentCategory: "Clothing",
       brands: [
         "levi's",
         "allen solly",
@@ -390,14 +398,14 @@ const productKnowledgeGraph: EntityMap = {
         "uspa",
         "jack & jones",
       ],
-      idealFor: ["men", "women", "unisex"],
+      idealFor: ["Men", "Women", "Unisex"],
       aliases: ["tee", "t shirt", "tshirt", "t-shirt"],
     },
   },
-  shirts: {
+  Shirts: {
     type: "subcategory",
     attributes: {
-      parentCategory: "clothing",
+      parentCategory: "Clothing",
       brands: [
         "allen solly",
         "peter england",
@@ -407,14 +415,14 @@ const productKnowledgeGraph: EntityMap = {
         "park avenue",
         "raymond",
       ],
-      idealFor: ["men", "women"],
+      idealFor: ["Men", "Women"],
       aliases: ["shirt", "formal shirt", "casual shirt", "dress shirt"],
     },
   },
-  jeans: {
+  Jeans: {
     type: "subcategory",
     attributes: {
-      parentCategory: "clothing",
+      parentCategory: "Clothing",
       brands: [
         "levi's",
         "wrangler",
@@ -424,29 +432,29 @@ const productKnowledgeGraph: EntityMap = {
         "spykar",
         "flying machine",
       ],
-      idealFor: ["men", "women", "unisex"],
+      idealFor: ["Men", "Women", "Unisex"],
       aliases: ["denim", "denim jeans", "jean", "pants"],
     },
   },
 
   // Demographics
-  men: {
+  Men: {
     type: "demographic",
     attributes: {
-      gender: "male",
+      gender: "Men",
       aliases: ["man", "gents", "boys", "male", "mens", "men's", "for men"],
       categories: [
-        "clothing",
-        "footwear",
-        "sports & fitness",
-        "beauty & personal care",
+        "Clothing",
+        "Footwear",
+        "Sports & Fitness",
+        "Beauty & Personal Care",
       ],
     },
   },
-  women: {
+  Women: {
     type: "demographic",
     attributes: {
-      gender: "female",
+      gender: "Women",
       aliases: [
         "woman",
         "ladies",
@@ -455,16 +463,17 @@ const productKnowledgeGraph: EntityMap = {
         "womens",
         "women's",
         "for women",
+        "women",
       ],
       categories: [
-        "clothing",
-        "footwear",
-        "sports & fitness",
-        "beauty & personal care",
+        "Clothing",
+        "Footwear",
+        "Sports & Fitness",
+        "Beauty & Personal Care",
       ],
     },
   },
-  kids: {
+  Kids: {
     type: "demographic",
     attributes: {
       ageGroup: "children",
@@ -477,33 +486,33 @@ const productKnowledgeGraph: EntityMap = {
         "for kids",
         "junior",
       ],
-      categories: ["clothing", "footwear", "toys & baby", "books"],
+      categories: ["Clothing", "Footwear", "Toys & Baby", "Books"],
     },
   },
-  boys: {
+  Boys: {
     type: "demographic",
     attributes: {
-      gender: "male",
+      gender: "Boys",
       ageGroup: "children",
       aliases: ["boy", "young boys", "little boys", "boys'", "for boys"],
-      categories: ["clothing", "footwear", "toys & baby"],
+      categories: ["Clothing", "Footwear", "Toys & Baby"],
     },
   },
-  girls: {
+  Girls: {
     type: "demographic",
     attributes: {
-      gender: "female",
+      gender: "Girls",
       ageGroup: "children",
       aliases: ["girl", "young girls", "little girls", "girls'", "for girls"],
-      categories: ["clothing", "footwear", "toys & baby"],
+      categories: ["Clothing", "Footwear", "Toys & Baby"],
     },
   },
-  unisex: {
+  Unisex: {
     type: "demographic",
     attributes: {
-      gender: "unisex",
+      gender: "Unisex",
       aliases: ["for all", "gender neutral", "both", "any gender"],
-      categories: ["clothing", "footwear", "sports & fitness"],
+      categories: ["Clothing", "Footwear", "Sports & Fitness"],
     },
   },
 
@@ -511,44 +520,44 @@ const productKnowledgeGraph: EntityMap = {
   samsung: {
     type: "brand",
     attributes: {
-      categories: ["electronics", "appliances"],
+      categories: ["Electronics", "Appliances"],
       subcategories: [
-        "smartphones",
-        "televisions",
-        "refrigerators",
-        "washing machines",
+        "Smartphones",
+        "Televisions",
+        "Refrigerators",
+        "Washing Machines",
       ],
     },
   },
   apple: {
     type: "brand",
     attributes: {
-      categories: ["electronics"],
-      subcategories: ["smartphones", "laptops", "wearables"],
+      categories: ["Electronics"],
+      subcategories: ["Smartphones", "Laptops", "Wearables"],
       aliases: ["iphone", "macbook", "mac", "ipad", "airpods"],
     },
   },
   nike: {
     type: "brand",
     attributes: {
-      categories: ["footwear", "clothing", "sports & fitness"],
+      categories: ["Footwear", "Clothing", "Sports & Fitness"],
       subcategories: [
-        "sports shoes",
-        "casual shoes",
-        "t-shirts",
-        "sports wear",
+        "Sports Shoes",
+        "Casual Shoes",
+        "T-Shirts",
+        "Sports Wear",
       ],
     },
   },
   adidas: {
     type: "brand",
     attributes: {
-      categories: ["footwear", "clothing", "sports & fitness"],
+      categories: ["Footwear", "Clothing", "Sports & Fitness"],
       subcategories: [
-        "sports shoes",
-        "casual shoes",
-        "t-shirts",
-        "sports wear",
+        "Sports Shoes",
+        "Casual Shoes",
+        "T-Shirts",
+        "Sports Wear",
       ],
     },
   },
@@ -594,6 +603,7 @@ function tokenizeQuery(query: string): string[] {
 function extractEntities(tokens: string[]): Map<string, string> {
   const entities = new Map<string, string>();
   const multiWordEntities = new Set<string>();
+  const entityScores = new Map<string, number>();
 
   // Check for multi-word entities first (like "casual shoes", "t-shirts")
   const fullQuery = tokens.join(" ");
@@ -603,11 +613,12 @@ function extractEntities(tokens: string[]): Map<string, string> {
       if (fullQuery.includes(entityLower)) {
         entities.set(entity, productKnowledgeGraph[entity].type);
         multiWordEntities.add(entity);
+        entityScores.set(entity, 10); // High score for exact multi-word matches
       }
     }
   });
 
-  // Process individual tokens
+  // Process individual tokens with scoring
   tokens.forEach((token) => {
     // Skip tokens that are already part of a multi-word entity
     if (
@@ -616,12 +627,14 @@ function extractEntities(tokens: string[]): Map<string, string> {
       return;
     }
 
-    // Direct match
+    // Direct match - highest priority
     if (productKnowledgeGraph[token]) {
       entities.set(token, productKnowledgeGraph[token].type);
+      entityScores.set(token, 9);
+      return;
     }
 
-    // Check for aliases and related terms
+    // Check for aliases and related terms with scoring
     Object.keys(productKnowledgeGraph).forEach((entity) => {
       // Skip if this token is already matched to this entity
       if (
@@ -632,6 +645,7 @@ function extractEntities(tokens: string[]): Map<string, string> {
       }
 
       const entityData = productKnowledgeGraph[entity];
+      let bestScore = 0;
 
       // Check all attributes that might contain aliases or related terms
       Object.keys(entityData.attributes).forEach((attrKey) => {
@@ -639,15 +653,24 @@ function extractEntities(tokens: string[]): Map<string, string> {
 
         // Check arrays (aliases, related terms, etc.)
         if (Array.isArray(attr)) {
+          // Exact match in aliases - high priority
           if (attr.includes(token)) {
-            entities.set(entity, entityData.type);
+            bestScore = Math.max(bestScore, 8);
           } else {
             // Check for partial matches in longer terms (e.g., "phone" in "smartphone")
-            const partialMatches = attr.filter(
-              (term) => term.includes(token) || token.includes(term),
-            );
+            // But avoid matching "men" inside "women"
+            const partialMatches = attr.filter((term) => {
+              // Avoid matching "men" inside "women" or similar cases
+              if (token === "men" && term.toLowerCase().includes("women")) {
+                return false;
+              }
+              if (token === "women" && term.toLowerCase().includes("men")) {
+                return false;
+              }
+              return term.includes(token) || token.includes(term);
+            });
             if (partialMatches.length > 0) {
-              entities.set(entity, entityData.type);
+              bestScore = Math.max(bestScore, 6);
             }
           }
         }
@@ -658,13 +681,51 @@ function extractEntities(tokens: string[]): Map<string, string> {
             entityData.type === "subcategory") &&
           (entity.includes(token) || token.includes(entity))
         ) {
-          entities.set(entity, entityData.type);
+          // Avoid matching "men" inside "women" for demographics
+          if (entityData.type === "demographic") {
+            if (token === "men" && entity.toLowerCase().includes("women")) {
+              // Skip this match
+            } else if (
+              token === "women" &&
+              entity.toLowerCase().includes("men")
+            ) {
+              // Skip this match
+            } else {
+              // For demographics, prioritize exact matches over substring matches
+              if (entity.toLowerCase() === token.toLowerCase()) {
+                bestScore = Math.max(bestScore, 9); // Exact match gets highest priority
+              } else {
+                bestScore = Math.max(bestScore, 6); // Substring match gets lower priority
+              }
+            }
+          } else {
+            bestScore = Math.max(bestScore, 7);
+          }
         }
       });
+
+      // Only set if we found a good match and it's better than existing
+      if (bestScore > 0) {
+        const currentScore = entityScores.get(entity) || 0;
+        if (bestScore > currentScore) {
+          entities.set(entity, entityData.type);
+          entityScores.set(entity, bestScore);
+        }
+      }
     });
   });
 
-  return entities;
+  // Filter out low-confidence matches
+  const filteredEntities = new Map<string, string>();
+  entities.forEach((type, entity) => {
+    const score = entityScores.get(entity) || 0;
+    if (score >= 6) {
+      // Only keep high-confidence matches
+      filteredEntities.set(entity, type);
+    }
+  });
+
+  return filteredEntities;
 }
 
 // Helper function to resolve relationships between entities
@@ -685,31 +746,108 @@ function resolveRelationships(
   let brandFound = false;
   let hasQualifier = false;
 
-  // Process each entity
-  entities.forEach((type, entity) => {
-    const entityData = productKnowledgeGraph[entity];
+  // First pass: collect all entities by type
+  const categories: string[] = [];
+  const subcategories: string[] = [];
+  const demographics: string[] = [];
+  const brands: string[] = [];
 
+  entities.forEach((type, entity) => {
     switch (type) {
       case "category":
-        result.filters.category = entity;
-        categoryFound = true;
-        result.confidence += 0.2;
+        categories.push(entity);
         break;
-
       case "subcategory":
-        result.filters.subcategory = entity;
-        subcategoryFound = true;
-        result.confidence += 0.15;
-
-        // Infer parent category if not explicitly mentioned
-        if (!categoryFound && entityData.attributes.parentCategory) {
-          result.filters.category = entityData.attributes.parentCategory;
-          categoryFound = true;
-          result.confidence += 0.1;
-        }
+        subcategories.push(entity);
         break;
-
       case "demographic":
+        demographics.push(entity);
+        break;
+      case "brand":
+        brands.push(entity);
+        break;
+    }
+  });
+
+  // Second pass: apply filters with priority logic
+  // Prioritize subcategories over categories
+  if (subcategories.length > 0) {
+    // Use the first subcategory found
+    const subcategory = subcategories[0];
+    result.filters.subcategory = subcategory;
+    subcategoryFound = true;
+    result.confidence += 0.2;
+
+    // Infer parent category if not explicitly mentioned
+    const entityData = productKnowledgeGraph[subcategory];
+    if (!categoryFound && entityData.attributes.parentCategory) {
+      result.filters.category = entityData.attributes.parentCategory;
+      categoryFound = true;
+      result.confidence += 0.1;
+    }
+  } else if (categories.length > 0) {
+    // Use the first category found
+    result.filters.category = categories[0];
+    categoryFound = true;
+    result.confidence += 0.15;
+  }
+
+  // Handle demographics
+  if (demographics.length > 0) {
+    // Check if there's a "for" pattern in the query
+    const fullQuery = tokens.join(" ").toLowerCase();
+    const forIndex = fullQuery.indexOf(" for ");
+
+    if (forIndex !== -1) {
+      // If there's a "for" pattern, find the specific demographic that comes after "for"
+      const afterFor = fullQuery.substring(forIndex + 5).trim();
+      console.log("After 'for':", afterFor);
+
+      // Find the demographic that matches what comes after "for"
+      let targetDemographic = null;
+      for (const demo of demographics) {
+        const demoLower = demo.toLowerCase();
+        if (afterFor.includes(demoLower)) {
+          targetDemographic = demo;
+          break;
+        }
+        // Also check aliases
+        const entityData = productKnowledgeGraph[demo];
+        if (
+          entityData.attributes.aliases &&
+          Array.isArray(entityData.attributes.aliases)
+        ) {
+          for (const alias of entityData.attributes.aliases) {
+            if (afterFor.includes(alias.toLowerCase())) {
+              targetDemographic = demo;
+              break;
+            }
+          }
+        }
+        if (targetDemographic) break;
+      }
+
+      if (targetDemographic) {
+        console.log("Found target demographic:", targetDemographic);
+        const entityData = productKnowledgeGraph[targetDemographic];
+
+        // Handle gender filter
+        if (entityData.attributes.gender) {
+          result.filters.gender = entityData.attributes.gender;
+          demographicFound = true;
+          result.confidence += 0.25; // Higher confidence for explicit "for" pattern
+        }
+
+        // Handle age group filter (like "kids")
+        if (entityData.attributes.ageGroup) {
+          result.filters.ageGroup = entityData.attributes.ageGroup;
+          result.confidence += 0.15;
+        }
+      } else {
+        // Fall back to first demographic if no match found
+        const demographic = demographics[0];
+        const entityData = productKnowledgeGraph[demographic];
+
         // Handle gender filter
         if (entityData.attributes.gender) {
           result.filters.gender = entityData.attributes.gender;
@@ -722,69 +860,98 @@ function resolveRelationships(
           result.filters.ageGroup = entityData.attributes.ageGroup;
           result.confidence += 0.1;
         }
-        break;
+      }
+    } else {
+      // No "for" pattern, use first demographic
+      const demographic = demographics[0];
+      const entityData = productKnowledgeGraph[demographic];
 
-      case "brand":
-        result.filters.brand = entity;
-        brandFound = true;
-        result.confidence += 0.2;
+      // Handle gender filter
+      if (entityData.attributes.gender) {
+        result.filters.gender = entityData.attributes.gender;
+        demographicFound = true;
+        result.confidence += 0.15;
+      }
 
-        // Infer categories from brand if not explicitly mentioned
+      // Handle age group filter (like "kids")
+      if (entityData.attributes.ageGroup) {
+        result.filters.ageGroup = entityData.attributes.ageGroup;
+        result.confidence += 0.1;
+      }
+    }
+  }
+
+  // Handle brands
+  if (brands.length > 0) {
+    const brand = brands[0];
+    result.filters.brand = brand;
+    brandFound = true;
+    result.confidence += 0.2;
+
+    // Infer categories from brand if not explicitly mentioned
+    if (
+      !categoryFound &&
+      productKnowledgeGraph[brand].attributes.categories &&
+      Array.isArray(productKnowledgeGraph[brand].attributes.categories) &&
+      productKnowledgeGraph[brand].attributes.categories.length > 0
+    ) {
+      // Prioritize first category associated with brand
+      result.filters.category =
+        productKnowledgeGraph[brand].attributes.categories[0];
+      categoryFound = true;
+      result.confidence += 0.05;
+    }
+
+    // Infer subcategories from brand if not explicitly mentioned
+    if (
+      !subcategoryFound &&
+      productKnowledgeGraph[brand].attributes.subcategories &&
+      Array.isArray(productKnowledgeGraph[brand].attributes.subcategories) &&
+      productKnowledgeGraph[brand].attributes.subcategories.length > 0
+    ) {
+      // Prioritize first subcategory associated with brand
+      result.filters.subcategory =
+        productKnowledgeGraph[brand].attributes.subcategories[0];
+      subcategoryFound = true;
+      result.confidence += 0.05;
+    }
+  }
+
+  // Handle festivals and relationships
+  entities.forEach((type, entity) => {
+    if (type === "festival") {
+      result.filters.category =
+        productKnowledgeGraph[entity].attributes.category || entity;
+      categoryFound = true;
+      result.confidence += 0.2;
+
+      // Add seasonal attribute if available
+      if (productKnowledgeGraph[entity].attributes.season) {
+        result.filters.season = productKnowledgeGraph[entity].attributes.season;
+        result.confidence += 0.05;
+      }
+    }
+
+    if (type === "relationship") {
+      hasQualifier = true;
+      // Process relationship entities
+      entities.forEach((otherType, otherEntity) => {
         if (
-          !categoryFound &&
-          entityData.attributes.categories &&
-          Array.isArray(entityData.attributes.categories) &&
-          entityData.attributes.categories.length > 0
+          otherType === "festival" &&
+          productKnowledgeGraph[entity].attributes.relatedEvents &&
+          Array.isArray(
+            productKnowledgeGraph[entity].attributes.relatedEvents,
+          ) &&
+          productKnowledgeGraph[entity].attributes.relatedEvents.includes(
+            otherEntity,
+          )
         ) {
-          // Prioritize first category associated with brand
-          result.filters.category = entityData.attributes.categories[0];
-          categoryFound = true;
-          result.confidence += 0.05;
+          // Special case handling (like "rakhi for bhai")
+          const festivalData = productKnowledgeGraph[otherEntity];
+          result.filters.category = festivalData.attributes.category;
+          result.confidence += 0.15;
         }
-
-        // Infer subcategories from brand if not explicitly mentioned
-        if (
-          !subcategoryFound &&
-          entityData.attributes.subcategories &&
-          Array.isArray(entityData.attributes.subcategories) &&
-          entityData.attributes.subcategories.length > 0
-        ) {
-          // Prioritize first subcategory associated with brand
-          result.filters.subcategory = entityData.attributes.subcategories[0];
-          subcategoryFound = true;
-          result.confidence += 0.05;
-        }
-        break;
-
-      case "festival":
-        result.filters.category = entityData.attributes.category || entity;
-        categoryFound = true;
-        result.confidence += 0.2;
-
-        // Add seasonal attribute if available
-        if (entityData.attributes.season) {
-          result.filters.season = entityData.attributes.season;
-          result.confidence += 0.05;
-        }
-        break;
-
-      case "relationship":
-        hasQualifier = true;
-        // Process relationship entities
-        entities.forEach((otherType, otherEntity) => {
-          if (
-            otherType === "festival" &&
-            entityData.attributes.relatedEvents &&
-            Array.isArray(entityData.attributes.relatedEvents) &&
-            entityData.attributes.relatedEvents.includes(otherEntity)
-          ) {
-            // Special case handling (like "rakhi for bhai")
-            const festivalData = productKnowledgeGraph[otherEntity];
-            result.filters.category = festivalData.attributes.category;
-            result.confidence += 0.15;
-          }
-        });
-        break;
+      });
     }
   });
 
@@ -834,7 +1001,7 @@ function processQueryPatterns(
     const beforeFor = tokens.slice(0, forIndex);
     const afterFor = tokens.slice(forIndex + 1);
 
-    // Process demographic targets after "for"
+    // Process demographic targets after "for" with higher priority
     afterFor.forEach((token) => {
       entities.forEach((type, entity) => {
         if (
@@ -844,18 +1011,18 @@ function processQueryPatterns(
             productKnowledgeGraph[entity].attributes.aliases.includes(token))
         ) {
           if (type === "demographic") {
-            // Handle gender and age group
+            // Handle gender and age group with higher priority
             const entityData = productKnowledgeGraph[entity];
             if (entityData.attributes.gender && !result.filters.gender) {
               result.filters.gender = entityData.attributes.gender;
-              result.confidence += 0.15;
+              result.confidence += 0.2; // Higher confidence for explicit "for" pattern
             }
             if (entityData.attributes.ageGroup && !result.filters.ageGroup) {
               result.filters.ageGroup = entityData.attributes.ageGroup;
-              result.confidence += 0.1;
+              result.confidence += 0.15;
             }
           } else if (type === "relationship") {
-            result.confidence += 0.1;
+            result.confidence += 0.15;
           }
         }
       });
@@ -868,7 +1035,7 @@ function processQueryPatterns(
           (token === entity || entity.includes(token)) &&
           (type === "category" || type === "subcategory")
         ) {
-          result.confidence += 0.05; // Bonus for explicit "X for Y" pattern
+          result.confidence += 0.1; // Bonus for explicit "X for Y" pattern
         }
       });
     });
@@ -913,12 +1080,38 @@ export async function convertQueryToFilters(
 ): Promise<QueryFilterResult> {
   // Tokenize the query
   const tokens = tokenizeQuery(query);
+  console.log("Tokens:", tokens);
 
   // Extract entities
   const entities = extractEntities(tokens);
+  console.log("Entities found:", Array.from(entities.entries()));
 
   // Resolve relationships and build filters
   const result = resolveRelationships(entities, tokens);
+  console.log("Final result:", result);
+
+  // Special handling for "for" pattern - override gender if found
+  const queryLower = query.toLowerCase();
+  const forIndex = queryLower.indexOf(" for ");
+  if (forIndex !== -1) {
+    const afterFor = queryLower.substring(forIndex + 5).trim();
+    console.log("After 'for':", afterFor);
+
+    // Check for specific demographics after "for"
+    if (afterFor.includes("women") || afterFor.includes("woman")) {
+      result.filters.gender = "Women";
+      result.confidence += 0.1;
+      console.log("Set gender to Women based on 'for' pattern");
+    } else if (afterFor.includes("men") || afterFor.includes("man")) {
+      result.filters.gender = "Men";
+      result.confidence += 0.1;
+      console.log("Set gender to Men based on 'for' pattern");
+    } else if (afterFor.includes("kids") || afterFor.includes("children")) {
+      result.filters.ageGroup = "children";
+      result.confidence += 0.1;
+      console.log("Set age group to children based on 'for' pattern");
+    }
+  }
 
   // If confidence is low, try to enrich with database knowledge
   if (result.confidence < 0.7 && tokens.length > 0) {

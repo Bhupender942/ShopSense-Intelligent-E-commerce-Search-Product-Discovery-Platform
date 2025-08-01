@@ -227,7 +227,7 @@ export const searchProducts = async (
 
             // Apply inferred gender filter if available
             if (inferredFilters.gender) {
-              filter.gender = { $regex: inferredFilters.gender, $options: "i" };
+              filter.gender = inferredFilters.gender; // Use exact match instead of regex
             }
 
             // Apply price range filter if available
@@ -240,14 +240,34 @@ export const searchProducts = async (
               filter.price = { $gte: 50000 };
               console.log("Applied premium price filter: price >= 50000");
             }
+
+            // Skip text search when we have high-confidence inferred filters
+            // This prevents conflicts between text search and structured filters
+            console.log("Using inferred filters, skipping text search");
+            console.log("Final filter:", JSON.stringify(filter, null, 2));
+          } else {
+            // If confidence is low, fall back to text search
+            console.log(
+              "Low confidence in query understanding, using text search",
+            );
+            applyTextSearch(query, filter);
           }
         } catch (error) {
           console.error("Error in query understanding:", error);
           // Continue with regular search if NLP fails
+          applyTextSearch(query, filter);
         }
+      } else {
+        // No NLP or explicit filters provided, use text search
+        console.log(
+          "Using text search (NLP disabled or explicit filters provided)",
+        );
+        applyTextSearch(query, filter);
       }
-    // Handle text search with synonym processing
-    if (query && typeof query === "string") {
+    }
+
+    // Helper function to apply text search
+    function applyTextSearch(query: string, filter: any) {
       // Process query to replace synonyms with database categories
       const processedQuery = processSearchQuery(query);
       console.log(
@@ -267,7 +287,7 @@ export const searchProducts = async (
           { tags: { $regex: query as string, $options: "i" } },
         ];
       }
-    }}
+    }
 
     // Handle category filter (support multiple categories)
     // Only apply if not already set by query understanding
@@ -321,13 +341,13 @@ export const searchProducts = async (
     }
 
     // Handle gender filter (if not already set by query understanding)
-    if (gender && typeof gender === "string" && !filter.gender) {
+    if (gender && typeof gender === "string") {
       if (gender.includes(",")) {
         // Multiple genders
         const genders = gender.split(",").map((g) => g.trim());
         filter.gender = { $in: genders };
       } else {
-        filter.gender = { $regex: gender, $options: "i" };
+        filter.gender = gender; // Use exact match instead of regex
       }
     }
 
@@ -342,6 +362,8 @@ export const searchProducts = async (
       availability: typeof availability,
       gender: typeof gender,
     });
+    console.log("Gender filter value:", gender);
+    console.log("Category filter value:", category);
 
     const sort: any = {};
     sort[sortBy as string] = sortOrder === "desc" ? -1 : 1;
