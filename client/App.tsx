@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import SearchResults from "./pages/SearchResults";
+import QueryUnderstanding from "./pages/QueryUnderstanding";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -37,6 +38,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SearchResults />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/query-understanding"
+              element={
+                <ProtectedRoute>
+                  <QueryUnderstanding />
                 </ProtectedRoute>
               }
             />

@@ -161,6 +161,7 @@ export function useProductSearch() {
       sortOrder?: string;
       page?: number;
       limit?: number;
+      use_nlp?: boolean;
     }) => {
       setIsLoading(true);
       setError(null);
@@ -172,6 +173,15 @@ export function useProductSearch() {
             params.append(key, value.toString());
           }
         });
+
+        // Enable query understanding by default
+        if (
+          searchParams.query &&
+          params.has("query") &&
+          !params.has("use_nlp")
+        ) {
+          params.append("use_nlp", "true");
+        }
 
         const url = `${API_URL}/autosuggest/search?${params}`;
         console.log("Making API request to:", url);
@@ -189,7 +199,14 @@ export function useProductSearch() {
         const data = await response.json();
         console.log("API response data:", data);
         setProducts(data.products || []);
-        setPagination(data.pagination || null);
+
+        // Include query understanding data in the pagination object
+        const paginationWithQueryUnderstanding = {
+          ...data.pagination,
+          queryUnderstanding: data.queryUnderstanding,
+        };
+
+        setPagination(paginationWithQueryUnderstanding);
       } catch (err) {
         console.error("Error in searchProducts:", err);
         setError(

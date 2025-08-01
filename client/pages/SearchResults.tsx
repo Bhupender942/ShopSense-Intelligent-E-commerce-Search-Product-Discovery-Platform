@@ -3,6 +3,7 @@ import { useSearchParams, useLocation } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ProductListing } from "@/components/product/ProductListing";
+import { QueryUnderstandingPanel } from "@/components/search/QueryUnderstandingPanel";
 import { Pagination } from "@/components/ui/Pagination";
 import { Button } from "@/components/ui/button";
 import { Filter, X, Image as ImageIcon, Loader2, Database } from "lucide-react";
@@ -65,6 +66,12 @@ export default function SearchResults() {
     // Add query if present
     if (query) params.query = query;
     if (category) params.category = category;
+
+    // Get use_nlp parameter from URL if present
+    const useNlp = searchParams.get("use_nlp");
+    if (useNlp) params.use_nlp = useNlp;
+    // Default to enabled if not specified and we have a query
+    else if (query && !params.use_nlp) params.use_nlp = "true";
 
     // Add filter parameters
     if (filters.categories.length > 0) {
@@ -149,6 +156,67 @@ export default function SearchResults() {
   const totalResults = isImageSearch
     ? imageSearchResults.length
     : pagination?.totalProducts || 0;
+
+  // Get query understanding data from search results
+  const queryUnderstanding =
+    !isImageSearch && pagination ? pagination.queryUnderstanding : undefined;
+
+  // Apply inferred filters to the UI filters if we have query understanding results
+  useEffect(() => {
+    if (
+      queryUnderstanding?.usingDerivedFilters &&
+      queryUnderstanding.inferredFilters
+    ) {
+      const newFilters = { ...filters };
+      const inferredFilters = queryUnderstanding.inferredFilters;
+      let filterChanged = false;
+
+      // Update category
+      if (inferredFilters.category && newFilters.categories.length === 0) {
+        newFilters.categories = [inferredFilters.category];
+        filterChanged = true;
+      }
+
+      // Update brand
+      if (inferredFilters.brand && newFilters.brands.length === 0) {
+        newFilters.brands = [inferredFilters.brand];
+        filterChanged = true;
+      }
+
+      // Update gender filter
+      if (inferredFilters.gender && newFilters.gender.length === 0) {
+        // Map the gender format to what the UI expects
+        const gender =
+          inferredFilters.gender === "male"
+            ? "Men"
+            : inferredFilters.gender === "female"
+              ? "Women"
+              : inferredFilters.gender;
+
+        newFilters.gender = [gender];
+        filterChanged = true;
+      }
+
+      // Update price range filter
+      if (inferredFilters.priceRange) {
+        if (inferredFilters.priceRange === "low") {
+          // For budget products, set price range to 199-20000
+          newFilters.priceRange = [199, 20000];
+          filterChanged = true;
+        } else if (inferredFilters.priceRange === "high") {
+          // For premium products, set price range to 50000-max
+          newFilters.priceRange = [50000, 298199];
+          filterChanged = true;
+        }
+      }
+
+      // Only update filters if something changed
+      if (filterChanged) {
+        console.log("Applying inferred filters:", newFilters);
+        setFilters(newFilters);
+      }
+    }
+  }, [queryUnderstanding]);
 
   const totalPages = pagination?.totalPages || 1;
 
@@ -267,6 +335,16 @@ export default function SearchResults() {
                   </Button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Query Understanding Panel */}
+          {!isLoading && !error && !isImageSearch && query && (
+            <div className="px-4 mt-4">
+              <QueryUnderstandingPanel
+                queryUnderstanding={queryUnderstanding}
+                query={query}
+              />
             </div>
           )}
 

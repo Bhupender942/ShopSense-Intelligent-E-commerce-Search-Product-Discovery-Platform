@@ -5,6 +5,7 @@ import {
   getTrendingSearches,
   getCategorySuggestions,
 } from "../utils/autosuggest";
+import { convertQueryToFilters } from "../utils/queryToFilter";
 import SearchSuggestion from "../models/SearchSuggestion";
 import Product from "../models/Products";
 import User from "../models/User";
@@ -165,6 +166,7 @@ export const searchProducts = async (
       sortOrder = "desc",
       page = 1,
       limit = 24,
+      use_nlp = "true", // New parameter to enable/disable NLP query understanding
     } = req.query;
 
     console.log("Search request:", {
@@ -181,12 +183,68 @@ export const searchProducts = async (
       sortOrder,
       page,
       limit,
+      use_nlp,
     });
 
     const filter: any = {};
 
-    // Handle text search
+    // Track if we're using any derived filters
+    let usingDerivedFilters = false;
+    let inferredFilters: Record<string, any> = {};
+    let inferredIntent: string | undefined;
+
+    // Handle text search and derive filters using NLP when appropriate
     if (query && typeof query === "string") {
+      // Convert query to structured filters using NLP (if enabled)
+      if (use_nlp === "true" && !category && !brand && !gender) {
+        try {
+          const queryUnderstanding = await convertQueryToFilters(query);
+          console.log("Query understanding:", queryUnderstanding);
+
+          // Only apply derived filters if confidence is reasonable
+          if (queryUnderstanding.confidence >= 0.6) {
+            inferredFilters = queryUnderstanding.filters;
+            inferredIntent = queryUnderstanding.inferredIntent;
+            usingDerivedFilters = true;
+
+            // Apply inferred category filter if available
+            if (inferredFilters.category) {
+              filter.category = {
+                $regex: inferredFilters.category,
+                $options: "i",
+              };
+            }
+
+            // Apply inferred subcategory filter if available
+            if (inferredFilters.subcategory) {
+              filter.subcategory = {
+                $regex: inferredFilters.subcategory,
+                $options: "i",
+              };
+            }
+
+            // Apply inferred gender filter if available
+            if (inferredFilters.gender) {
+              filter.gender = { $regex: inferredFilters.gender, $options: "i" };
+            }
+
+            // Apply price range filter if available
+            if (inferredFilters.priceRange === "low") {
+              // For budget/low price range, filter to products under 20,000
+              filter.price = { $lte: 20000 };
+              console.log("Applied budget price filter: price <= 20000");
+            } else if (inferredFilters.priceRange === "high") {
+              // For premium/high price range, filter to products above 50,000
+              filter.price = { $gte: 50000 };
+              console.log("Applied premium price filter: price >= 50000");
+            }
+          }
+        } catch (error) {
+          console.error("Error in query understanding:", error);
+          // Continue with regular search if NLP fails
+        }
+      }
+
       // Use text search if available, otherwise use regex
       try {
         filter.$text = { $search: query };
@@ -203,7 +261,8 @@ export const searchProducts = async (
     }
 
     // Handle category filter (support multiple categories)
-    if (category && typeof category === "string") {
+    // Only apply if not already set by query understanding
+    if (category && typeof category === "string" && !filter.category) {
       if (category.includes(",")) {
         // Multiple categories
         const categories = category.split(",").map((c) => c.trim());
@@ -252,8 +311,8 @@ export const searchProducts = async (
       }
     }
 
-    // Handle gender filter
-    if (gender && typeof gender === "string") {
+    // Handle gender filter (if not already set by query understanding)
+    if (gender && typeof gender === "string" && !filter.gender) {
       if (gender.includes(",")) {
         // Multiple genders
         const genders = gender.split(",").map((g) => g.trim());
@@ -341,6 +400,13 @@ export const searchProducts = async (
         sortBy,
         sortOrder,
       },
+      queryUnderstanding: usingDerivedFilters
+        ? {
+            inferredFilters,
+            inferredIntent,
+            usingDerivedFilters,
+          }
+        : undefined,
     });
   } catch (error) {
     console.error("Error searching products:", error);
@@ -452,6 +518,72 @@ export const getTestProducts = async (
     console.error("Error testing products:", error);
     res.status(500).json({
       message: "Error testing products",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+// New endpoint for analyzing queries and converting them to structured filters
+export const analyzeQuery = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { q: query } = req.query;
+
+    if (!query || typeof query !== "string") {
+      res.status(400).json({
+        message: "Valid query parameter is required",
+        example: "/api/analyze-query?q=sneakers for men",
+      });
+      return;
+    }
+
+    const analysis = await convertQueryToFilters(query);
+
+    // Get sample matching products based on the inferred filters
+    const filters: any = {};
+
+    if (analysis.filters.category) {
+      filters.category = { $regex: analysis.filters.category, $options: "i" };
+    }
+
+    if (analysis.filters.subcategory) {
+      filters.subcategory = {
+        $regex: analysis.filters.subcategory,
+        $options: "i",
+      };
+    }
+
+    if (analysis.filters.gender) {
+      filters.gender = { $regex: analysis.filters.gender, $options: "i" };
+    }
+
+    // Apply price range filter if available
+    if (analysis.filters.priceRange === "low") {
+      // For budget/low price range, filter to products under 20,000
+      filters.price = { $lte: 20000 };
+    } else if (analysis.filters.priceRange === "high") {
+      // For premium/high price range, filter to products above 50,000
+      filters.price = { $gte: 50000 };
+    }
+
+    // Get sample matching products
+    const sampleProducts = await Product.find(filters)
+      .limit(5)
+      .select("product_id title brand category subcategory gender price")
+      .lean();
+
+    res.status(200).json({
+      query,
+      analysis,
+      matchingFilters: filters,
+      sampleProducts,
+    });
+  } catch (error) {
+    console.error("Error analyzing query:", error);
+    res.status(500).json({
+      message: "Error analyzing query",
       error: error instanceof Error ? error.message : "Unknown error",
     });
   }

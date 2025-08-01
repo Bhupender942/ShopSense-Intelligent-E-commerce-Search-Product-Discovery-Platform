@@ -15,14 +15,19 @@ export default function Home() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      // Add use_nlp parameter to enable query understanding on the search page
+      navigate(
+        `/search?q=${encodeURIComponent(searchQuery.trim())}&use_nlp=true`,
+      );
     }
   };
 
   const handleVoiceSearchResult = (transcript: string) => {
     setSearchQuery(transcript);
     if (transcript.trim()) {
-      navigate(`/search?q=${encodeURIComponent(transcript.trim())}`);
+      navigate(
+        `/search?q=${encodeURIComponent(transcript.trim())}&use_nlp=true`,
+      );
     }
   };
 
@@ -81,8 +86,8 @@ export default function Home() {
           onSearch={(query, type) => {
             const searchUrl =
               type === "category"
-                ? `/search?category=${encodeURIComponent(query)}`
-                : `/search?q=${encodeURIComponent(query)}`;
+                ? `/search?category=${encodeURIComponent(query)}&use_nlp=true`
+                : `/search?q=${encodeURIComponent(query)}&use_nlp=true`;
             navigate(searchUrl);
           }}
           onImageSearch={handleImageSearch}
@@ -105,7 +110,9 @@ export default function Home() {
               <button
                 key={category}
                 onClick={() => {
-                  navigate(`/search?category=${encodeURIComponent(category)}`);
+                  navigate(
+                    `/search?category=${encodeURIComponent(category)}&use_nlp=true`,
+                  );
                 }}
                 className="px-4 py-2 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors"
               >

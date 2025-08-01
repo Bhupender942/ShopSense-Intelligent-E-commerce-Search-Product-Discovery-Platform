@@ -28,7 +28,10 @@ export const EnhancedSearch: React.FC<EnhancedSearchProps> = ({
 
   const handleSearch = async (query: string = searchQuery, type?: string) => {
     if (query.trim()) {
+      // Track search analytics
       await trackSearchAnalytics(query.trim(), "search", category);
+
+      // Always use query understanding for search (this will be properly integrated in the search results page)
       onSearch(query.trim(), type);
     }
   };
