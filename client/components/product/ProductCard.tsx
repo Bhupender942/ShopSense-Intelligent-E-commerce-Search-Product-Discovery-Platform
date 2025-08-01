@@ -28,6 +28,7 @@ export interface Product {
   subcategory?: string;
   availability?: string;
   popularity_score?: number;
+  description?: string;
 }
 
 interface ProductCardProps {
@@ -51,6 +52,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     brand: product.brand || "",
     category: product.category || "",
     subcategory: product.subcategory || "",
+    description: product.description || "",
   };
 
   const discountPercentage =
@@ -103,6 +105,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   {normalizedProduct.category && (
                     <span>{normalizedProduct.category}</span>
                   )}
+                </div>
+              )}
+
+              {/* Description */}
+              {normalizedProduct.description && (
+                <div className="text-xs text-gray-600 mb-2 overflow-hidden">
+                  <div
+                    className="line-clamp-2"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {normalizedProduct.description}
+                  </div>
                 </div>
               )}
 

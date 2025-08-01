@@ -286,7 +286,7 @@ export const searchProducts = async (
           .skip(skip)
           .limit(Number(limit))
           .select(
-            "product_id title brand category subcategory gender price original_price discount_percentage average_rating rating_count availability images popularity_score date_added tags",
+            "product_id title brand category subcategory gender price original_price discount_percentage average_rating rating_count availability images popularity_score date_added tags description",
           )
           .lean(),
         Product.countDocuments(filter),
@@ -309,7 +309,7 @@ export const searchProducts = async (
             .skip(skip)
             .limit(Number(limit))
             .select(
-              "product_id title brand category subcategory gender price original_price discount_percentage average_rating rating_count availability images popularity_score date_added tags",
+              "product_id title brand category subcategory gender price original_price discount_percentage average_rating rating_count availability images popularity_score date_added tags description",
             )
             .lean(),
           Product.countDocuments(fallbackFilter),
