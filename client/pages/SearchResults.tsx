@@ -4,10 +4,13 @@ import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ProductListing } from "@/components/product/ProductListing";
 import { QueryUnderstandingPanel } from "@/components/search/QueryUnderstandingPanel";
+import { EnhancedProductListing } from "@/components/product/EnhancedProductListing";
 import { Pagination } from "@/components/ui/Pagination";
 import { Button } from "@/components/ui/button";
 import { Filter, X, Image as ImageIcon, Loader2, Database } from "lucide-react";
 import { useProductSearch } from "@/hooks/use-autosuggest";
+import { adService } from "@/services/adService";
+import { SidebarAds } from "@/components/ads/AdPlacement";
 
 interface FilterState {
   categories: string[];
@@ -109,6 +112,7 @@ export default function SearchResults() {
     if (!isImageSearch) {
       const searchParams = buildSearchParams();
       console.log("Searching products with params:", searchParams);
+      console.log("Current filters state:", filters);
       searchProducts(searchParams);
     }
   }, [query, category, currentPage, isImageSearch, filters, searchProducts]);
@@ -142,6 +146,7 @@ export default function SearchResults() {
 
   // Handle filter changes
   const handleFiltersChange = (newFilters: FilterState) => {
+    console.log("Filters changed:", newFilters);
     setFilters(newFilters);
     setCurrentPage(1); // Reset to first page when filters change
   };
@@ -220,6 +225,9 @@ export default function SearchResults() {
 
   const totalPages = pagination?.totalPages || 1;
 
+  // Get ads for the current search
+  const searchAds = adService.getSearchResultsAds(query, category);
+
   return (
     <div className="min-h-screen bg-flipkart-gray">
       <Header />
@@ -243,6 +251,10 @@ export default function SearchResults() {
             onFiltersChange={handleFiltersChange}
             currentFilters={filters}
           />
+          {/* Sidebar Ads */}
+          <div className="p-4 border-t border-flipkart-border">
+            <SidebarAds ads={searchAds.sidebarAds} />
+          </div>
         </div>
 
         {/* Mobile Sidebar Overlay */}
@@ -368,13 +380,14 @@ export default function SearchResults() {
 
           {/* Products Display */}
           {!isLoading && !error && (
-            <ProductListing
+            <EnhancedProductListing
               products={displayProducts}
               totalResults={totalResults}
               currentPage={currentPage}
               totalPages={totalPages}
               searchQuery={isImageSearch ? "Image Search" : query}
               activeFilters={filters}
+              ads={searchAds.productAds}
               onClearFilter={(filterType, value) => {
                 const newFilters = { ...filters };
 

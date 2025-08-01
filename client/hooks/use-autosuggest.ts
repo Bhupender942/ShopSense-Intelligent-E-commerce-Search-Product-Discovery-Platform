@@ -157,6 +157,9 @@ export function useProductSearch() {
       minPrice?: number;
       maxPrice?: number;
       minRating?: number;
+      minDiscount?: number;
+      availability?: string;
+      gender?: string;
       sortBy?: string;
       sortOrder?: string;
       page?: number;
@@ -185,6 +188,8 @@ export function useProductSearch() {
 
         const url = `${API_URL}/autosuggest/search?${params}`;
         console.log("Making API request to:", url);
+        console.log("Search parameters:", searchParams);
+        console.log("URL parameters:", params.toString());
 
         const response = await fetch(url);
 

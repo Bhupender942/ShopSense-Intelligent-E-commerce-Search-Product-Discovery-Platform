@@ -103,7 +103,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           // Extract brands from categories data
           const allBrands =
             data.categories?.flatMap((cat: any) => cat.brands || []) || [];
-          setBrands([...new Set(allBrands)]);
+          setBrands(
+            [...new Set(allBrands)].filter(
+              (brand): brand is string => typeof brand === "string",
+            ),
+          );
         }
       } catch (error) {
         console.error("Failed to load brands:", error);
@@ -131,6 +135,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const updateFilters = (newFilters: Partial<FilterState>) => {
     const updatedFilters = { ...filters, ...newFilters };
+    console.log("Sidebar: Updating filters:", updatedFilters);
     setFilters(updatedFilters);
     onFiltersChange?.(updatedFilters);
   };

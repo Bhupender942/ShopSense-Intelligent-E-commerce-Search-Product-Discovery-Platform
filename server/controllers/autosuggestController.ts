@@ -186,6 +186,7 @@ export const searchProducts = async (
       limit,
       use_nlp,
     });
+    console.log("Raw query parameters:", req.query);
 
     const filter: any = {};
 
@@ -331,6 +332,16 @@ export const searchProducts = async (
     }
 
     console.log("MongoDB filter:", JSON.stringify(filter, null, 2));
+    console.log("Filter parameters received:", {
+      category: typeof category,
+      brand: typeof brand,
+      minPrice: typeof minPrice,
+      maxPrice: typeof maxPrice,
+      minRating: typeof minRating,
+      minDiscount: typeof minDiscount,
+      availability: typeof availability,
+      gender: typeof gender,
+    });
 
     const sort: any = {};
     sort[sortBy as string] = sortOrder === "desc" ? -1 : 1;
