@@ -6,15 +6,18 @@ import { Input } from "@/components/ui/input";
 import { VoiceSearch } from "@/components/ui/voice-search";
 import { EnhancedSearch } from "@/components/ui/enhanced-search";
 import ImageSearch from "@/components/ImageSearch";
+import { useRecentSearches } from "@/hooks/use-recent-searches";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showImageSearch, setShowImageSearch] = useState(false);
   const navigate = useNavigate();
+  const { addRecentSearch } = useRecentSearches();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      addRecentSearch(searchQuery.trim());
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
@@ -22,6 +25,7 @@ export default function Home() {
   const handleVoiceSearchResult = (transcript: string) => {
     setSearchQuery(transcript);
     if (transcript.trim()) {
+      addRecentSearch(transcript.trim());
       navigate(`/search?q=${encodeURIComponent(transcript.trim())}`);
     }
   };
