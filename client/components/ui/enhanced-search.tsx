@@ -32,12 +32,9 @@ export const EnhancedSearch: React.FC<EnhancedSearchProps> = ({
     if (query.trim()) {
       // Track search analytics
       await trackSearchAnalytics(query.trim(), "search", category);
-<<<<<<< HEAD
 
       // Always use query understanding for search (this will be properly integrated in the search results page)
-=======
       addRecentSearch(query.trim());
->>>>>>> 7423c813cb796cac3b5131128c4da0ef146495d6
       onSearch(query.trim(), type);
     }
   };
