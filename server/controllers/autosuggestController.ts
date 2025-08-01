@@ -5,6 +5,7 @@ import {
   getTrendingSearches,
   getCategorySuggestions,
 } from "../utils/autosuggest";
+import { processSearchQuery } from "../utils/synonyms";
 import SearchSuggestion from "../models/SearchSuggestion";
 import Product from "../models/Products";
 import User from "../models/User";
@@ -185,19 +186,25 @@ export const searchProducts = async (
 
     const filter: any = {};
 
-    // Handle text search
+    // Handle text search with synonym processing
     if (query && typeof query === "string") {
+      // Process query to replace synonyms with database categories
+      const processedQuery = processSearchQuery(query);
+      console.log(
+        `Original query: "${query}" -> Processed query: "${processedQuery}"`,
+      );
+
       // Use text search if available, otherwise use regex
       try {
-        filter.$text = { $search: query };
+        filter.$text = { $search: processedQuery };
       } catch (error) {
         // Fallback to regex search if text index is not available
         filter.$or = [
-          { title: { $regex: query, $options: "i" } },
-          { brand: { $regex: query, $options: "i" } },
-          { category: { $regex: query, $options: "i" } },
-          { subcategory: { $regex: query, $options: "i" } },
-          { tags: { $regex: query, $options: "i" } },
+          { title: { $regex: processedQuery, $options: "i" } },
+          { brand: { $regex: processedQuery, $options: "i" } },
+          { category: { $regex: processedQuery, $options: "i" } },
+          { subcategory: { $regex: processedQuery, $options: "i" } },
+          { tags: { $regex: processedQuery, $options: "i" } },
         ];
       }
     }
