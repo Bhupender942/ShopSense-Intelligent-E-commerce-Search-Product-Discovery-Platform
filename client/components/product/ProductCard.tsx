@@ -2,6 +2,10 @@ import React from "react";
 import { Star, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  EnvironmentalBadge,
+  EnvironmentalMetrics,
+} from "@/components/ui/environmental-badge";
 
 export interface Product {
   id?: string;
@@ -29,6 +33,7 @@ export interface Product {
   availability?: string;
   popularity_score?: number;
   description?: string;
+  environmentalMetrics?: EnvironmentalMetrics;
 }
 
 interface ProductCardProps {
@@ -53,6 +58,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     category: product.category || "",
     subcategory: product.subcategory || "",
     description: product.description || "",
+    environmentalMetrics: product.environmentalMetrics,
   };
 
   const discountPercentage =
@@ -105,6 +111,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   {normalizedProduct.category && (
                     <span>{normalizedProduct.category}</span>
                   )}
+                </div>
+              )}
+
+              {/* Environmental Badge */}
+              {normalizedProduct.environmentalMetrics && (
+                <div className="mb-2">
+                  <EnvironmentalBadge
+                    metrics={normalizedProduct.environmentalMetrics}
+                    size="sm"
+                    showDetails={false}
+                  />
                 </div>
               )}
 

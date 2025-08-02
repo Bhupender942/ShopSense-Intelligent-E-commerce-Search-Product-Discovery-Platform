@@ -8,6 +8,7 @@ import {
   Menu,
   X,
   LogOut,
+  Leaf,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,6 +94,15 @@ export const Header: React.FC = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
+            {/* Environmental Impact Link */}
+            <Link
+              to="/environmental-impact"
+              className="text-white hover:text-white/90 flex items-center space-x-1"
+            >
+              <Leaf className="h-4 w-4" />
+              <span>Eco Impact</span>
+            </Link>
+
             {/* User Menu */}
             <div className="relative">
               <Button
@@ -191,6 +201,15 @@ export const Header: React.FC = () => {
                 <div className="font-medium">Hi, {user?.name || "User"}</div>
                 <div className="text-xs text-white/80">{user?.email}</div>
               </div>
+
+              {/* Environmental Impact Link */}
+              <Link
+                to="/environmental-impact"
+                className="flex items-center w-full px-4 py-2 text-white hover:bg-blue-600"
+              >
+                <Leaf className="h-4 w-4 mr-2" />
+                Eco Impact
+              </Link>
 
               <Button
                 variant="ghost"

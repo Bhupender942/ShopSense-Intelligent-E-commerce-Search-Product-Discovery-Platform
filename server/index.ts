@@ -6,6 +6,7 @@ import { connectToDatabase } from "./db/connection";
 import authRoutes from "./routes/authRoutes";
 import autosuggestRoutes from "./routes/autosuggestRoutes";
 import imageSearchRoutes from "./routes/imageSearchRoutes";
+import environmentalRoutes from "./routes/environmentalRoutes";
 import { importProductData } from "./utils/importProducts";
 import { preloadSuggestionCache } from "./utils/autosuggest";
 import path from "path";
@@ -54,6 +55,7 @@ export async function createServer() {
   app.use("/api/auth", authRoutes);
   app.use("/api/autosuggest", autosuggestRoutes);
   app.use("/api/image-search", imageSearchRoutes);
+  app.use("/api/environmental", environmentalRoutes);
 
   // Serve static uploads for image search
   app.use("/uploads", express.static(path.join(__dirname, "uploads")));

@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import SearchResults from "./pages/SearchResults";
 import QueryUnderstanding from "./pages/QueryUnderstanding";
+import EnvironmentalImpact from "./pages/EnvironmentalImpact";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -46,6 +47,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <QueryUnderstanding />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/environmental-impact"
+              element={
+                <ProtectedRoute>
+                  <EnvironmentalImpact />
                 </ProtectedRoute>
               }
             />

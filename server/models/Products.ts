@@ -22,6 +22,17 @@ export interface IProduct extends Document {
   seller: object;
   popularity_score: number;
   date_added: string;
+  // Environmental metrics
+  environmentalMetrics?: {
+    co2Emissions: number;
+    waterFootprint: number;
+    energyConsumption: number;
+    recyclabilityScore: number;
+    ecoFriendlyScore: number;
+    isEcoFriendly: boolean;
+    environmentalBadge: string;
+    sustainabilityFeatures: string[];
+  };
 }
 
 const ProductSchema = new Schema<IProduct>({
@@ -46,6 +57,17 @@ const ProductSchema = new Schema<IProduct>({
   seller: Schema.Types.Mixed,
   popularity_score: { type: Number, index: true },
   date_added: String,
+  // Environmental metrics schema
+  environmentalMetrics: {
+    co2Emissions: { type: Number, default: 0 },
+    waterFootprint: { type: Number, default: 0 },
+    energyConsumption: { type: Number, default: 0 },
+    recyclabilityScore: { type: Number, default: 0 },
+    ecoFriendlyScore: { type: Number, default: 0 },
+    isEcoFriendly: { type: Boolean, default: false },
+    environmentalBadge: { type: String, default: "" },
+    sustainabilityFeatures: [String],
+  },
 });
 
 // Text index for search functionality
@@ -54,8 +76,13 @@ ProductSchema.index({
   brand: "text",
   category: "text",
   subcategory: "text",
-  tags: "text"
+  tags: "text",
 });
 
-const Product = mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
+// Index for environmental metrics
+ProductSchema.index({ "environmentalMetrics.isEcoFriendly": 1 });
+ProductSchema.index({ "environmentalMetrics.ecoFriendlyScore": -1 });
+
+const Product =
+  mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
 export default Product as mongoose.Model<IProduct>;
