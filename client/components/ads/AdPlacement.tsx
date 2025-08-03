@@ -87,14 +87,6 @@ export const SponsoredSection: React.FC<{ ads: AdBannerType[] }> = ({
 
   return (
     <div className="mb-6">
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-        <h3 className="text-lg font-semibold text-yellow-800 mb-2">
-          Sponsored Products
-        </h3>
-        <p className="text-sm text-yellow-700">
-          These products are sponsored by our partners
-        </p>
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {sponsoredAds.slice(0, 6).map((ad) => (
           <AdBanner key={ad.id} banner={ad} variant="compact" />
