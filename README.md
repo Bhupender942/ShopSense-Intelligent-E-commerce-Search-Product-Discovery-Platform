@@ -2,6 +2,8 @@
 
 > **Revolutionizing E-commerce with AI-Powered Search, Voice Recognition, and Environmental Sustainability**
 
+[Demo Video](https://drive.google.com/file/d/1QKwYq-h50Dp19Aqhtmw6zo8gwk4i_-ez/view)
+
 ---
 
 ## 🎯 **Project Overview**
