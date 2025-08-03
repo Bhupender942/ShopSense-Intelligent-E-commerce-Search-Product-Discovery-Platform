@@ -43,17 +43,6 @@
 
 ---
 
-## 🚀 **Live Demo**
-
-**[🌐 Try the Live Demo](https://your-demo-link.com)**
-
-**Demo Credentials:**
-
-- **Email**: `demo@flipkart.com`
-- **Password**: `demo123`
-
----
-
 ## 🛠️ **Technology Stack**
 
 ### **Frontend**
@@ -788,12 +777,6 @@ git push origin feature/amazing-feature
 
 # Open Pull Request
 ```
-
----
-
-## 📄 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
