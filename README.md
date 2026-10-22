@@ -1,14 +1,10 @@
-# 🚀 **Flipkart GRiD 7.0 - Intelligent E-commerce Platform**
+# 🚀 **ShopSense - Intelligent E-commerce Platform**
 
 > **Revolutionizing E-commerce with AI-Powered Search, Voice Recognition, and Environmental Sustainability**
 
-[Demo Video](https://drive.google.com/file/d/1QKwYq-h50Dp19Aqhtmw6zo8gwk4i_-ez/view)
-
----
-
 ## 🎯 **Project Overview**
 
-**Flipkart GRiD 7.0** is a cutting-edge e-commerce platform that demonstrates the future of online shopping through **AI-powered search technology**, **multi-modal interaction**, and **environmental consciousness**. Built with modern web technologies, this project showcases advanced algorithms, real-time processing, and sustainable e-commerce practices.
+**ShopSense** is a cutting-edge e-commerce platform that demonstrates the future of online shopping through **AI-powered search technology**, **multi-modal interaction**, and **environmental consciousness**. Built with modern web technologies, this project showcases advanced algorithms, real-time processing, and sustainable e-commerce practices.
 
 ### 🌟 **Key Innovations**
 
