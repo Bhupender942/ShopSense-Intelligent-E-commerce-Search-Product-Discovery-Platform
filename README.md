@@ -110,10 +110,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/flipkart-grid-7.0.git
+https://github.com/Bhupender942/ShopSense-Intelligent-E-commerce-Search-Product-Discovery-Platform.git
 
-# Navigate to project directory
-cd flipkart-grid-7.0
 ```
 
 #### **2. Install Dependencies**
@@ -165,9 +163,9 @@ code .env
 
 ```env
 # MongoDB Connection (Choose one)
-MONGODB_URI=mongodb://localhost:27017/flipkart_grid
+MONGODB_URI=mongodb://localhost:27017/shopsense
 # OR for MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/flipkart_grid
+# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/shopsense
 
 # JWT Secret for authentication (Generate a strong secret)
 JWT_SECRET=your-super-secret-jwt-key-here
@@ -444,7 +442,7 @@ We welcome contributions!
 
 ```bash
 # Fork the repository
-git clone https://github.com/your-fork/flipkart-grid-7.0.git
+https://github.com/Bhupender942/ShopSense-Intelligent-E-commerce-Search-Product-Discovery-Platform.git
 
 # Create feature branch
 git checkout -b feature/amazing-feature
